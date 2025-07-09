@@ -1,0 +1,41 @@
+{
+  "name": "reactlith",
+  "version": "0.0.1",
+  "description": "Create a full-stack, typesafe, rock-solid React monorepo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SashkaHavr/reactlith.git",
+    "directory": "apps/cli"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "bin": {
+    "reactlith": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "clean": "git clean -xdf .turbo node_modules",
+    "dev": "tsup --watch",
+    "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",
+    "format:check": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --check",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "prettier": "@reactlith/prettier-config",
+  "dependencies": {
+    "@trpc/server": "catalog:trpc",
+    "trpc-cli": "catalog:trpc",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@reactlith/eslint-config": "workspace:*",
+    "@reactlith/prettier-config": "workspace:*",
+    "@reactlith/typescript-config": "workspace:*",
+    "@types/node": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:"
+  }
+}

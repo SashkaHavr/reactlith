@@ -1,0 +1,9 @@
+{
+  "extends": "@reactlith/typescript-config",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
+  }
+}

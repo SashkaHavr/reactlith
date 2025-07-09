@@ -1,0 +1,30 @@
+{
+  "name": "reactlith",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "check": "turbo format:check lint typecheck",
+    "clean": "turbo clean clean:root",
+    "clean:root": "git clean -xdf .turbo node_modules",
+    "deps": "pnpx taze -r",
+    "deps-major": "pnpx taze major -r",
+    "deps-major-w": "pnpx taze major -r -w",
+    "deps-w": "pnpx taze -r -w",
+    "dev": "turbo dev",
+    "fix": "turbo format lint:fix typecheck",
+    "format": "turbo format",
+    "format:check": "turbo format:check",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
+    "start": "turbo start",
+    "test": "turbo test",
+    "test:watch": "turbo test:watch",
+    "typecheck": "turbo typecheck"
+  },
+  "prettier": "@reactlith/prettier-config",
+  "devDependencies": {
+    "@reactlith/prettier-config": "workspace:*",
+    "turbo": "^2.5.4"
+  },
+  "packageManager": "pnpm@10.12.4"
+}

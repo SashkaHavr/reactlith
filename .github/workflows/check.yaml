@@ -1,0 +1,13 @@
+name: Run workspace check
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  run-check:
+    uses: ./.github/workflows/check-reusable.yaml
+    secrets: inherit
