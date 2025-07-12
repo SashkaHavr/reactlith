@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { log } from '@clack/prompts';
 import { createCli, z } from 'trpc-cli';
 
 import { infoCommand } from './commands/info';
@@ -33,9 +34,16 @@ export const cliRouter = router({
 
 const cli = createCli({
   router: cliRouter,
+
   name: 'Reactlith CLI',
   description: 'Create a full-stack, typesafe, rock-solid React monorepo',
   version: '0.0.1',
   context: await createContext(),
 });
-await cli.run();
+await cli.run({
+  logger: {
+    info: (...args) => args.forEach((arg) => log.info(arg as string)),
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    error: () => {},
+  },
+});
