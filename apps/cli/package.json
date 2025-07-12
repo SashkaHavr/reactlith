@@ -47,9 +47,11 @@
   "dependencies": {
     "@clack/prompts": "^0.11.0",
     "@trpc/server": "catalog:trpc",
+    "execa": "^9.6.0",
     "fs-extra": "^11.3.0",
     "picocolors": "^1.1.1",
     "trpc-cli": "catalog:trpc",
+    "which": "^5.0.0",
     "zod": "catalog:"
   },
   "devDependencies": {
@@ -58,6 +60,7 @@
     "@reactlith/typescript-config": "workspace:*",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "catalog:",
+    "@types/which": "^3.0.4",
     "tsup": "catalog:",
     "type-fest": "^4.41.0",
     "typescript": "catalog:"
