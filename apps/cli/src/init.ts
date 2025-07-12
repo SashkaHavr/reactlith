@@ -1,31 +1,14 @@
 import type { TrpcCliMeta } from 'trpc-cli';
 import { log } from '@clack/prompts';
 import { initTRPC } from '@trpc/server';
-import pc from 'picocolors';
-import z, { ZodError } from 'zod';
+import { ZodError } from 'zod';
 
 import type { Context } from './context';
 import { toolIsMissing } from './utils/cliTools';
 import { CliError, UserInputError } from './utils/error';
+import { format } from './utils/format';
 
-const t = initTRPC
-  .meta<TrpcCliMeta>()
-  .context<Context>()
-  .create({
-    errorFormatter(opts) {
-      const { shape, error } = opts;
-      return {
-        ...shape,
-        data: {
-          ...shape.data,
-          zodError:
-            error.cause instanceof ZodError
-              ? z.prettifyError(error.cause)
-              : null,
-        },
-      };
-    },
-  });
+const t = initTRPC.meta<TrpcCliMeta>().context<Context>().create();
 
 export const router = t.router;
 
@@ -48,10 +31,12 @@ const catchErrorsProcedure = t.procedure.use(async ({ next }) => {
     if (internalError.cause instanceof Error) {
       log.error(internalError.cause.message);
     }
+  } else if (internalError instanceof ZodError) {
+    return result;
   } else {
     log.error(`Internal error 😱: ${result.error.message}`);
   }
-  return result;
+  return { ok: true, marker: result.marker, data: undefined };
 });
 
 export const publicProcedure = catchErrorsProcedure.use(async ({ next }) => {
@@ -99,7 +84,7 @@ export const workspaceProcedure = publicProcedure.use(({ ctx, next }) => {
   if (!ctx.workspace) {
     throw new UserInputError({
       message: 'Monorepo was not found',
-      hint: `Make sure you are in the root of the monorepo or use ${pc.italic('npx reactlith init')} to create one.`,
+      hint: `Make sure you are in the root of the monorepo or use ${format.command('init')} to create one.`,
     });
   }
   return next({

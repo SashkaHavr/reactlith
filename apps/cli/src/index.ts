@@ -2,14 +2,13 @@
 import { log } from '@clack/prompts';
 import { createCli, z } from 'trpc-cli';
 
+import { createCommand } from './commands/create';
 import { infoCommand } from './commands/info';
 import { createContext } from './context';
-import { publicProcedure, router, workspaceProcedure } from './init';
+import { router, workspaceProcedure } from './init';
 
 export const cliRouter = router({
-  create: publicProcedure
-    .meta({ description: 'create monorepo' })
-    .query(() => console.log('Init')),
+  create: createCommand,
   add: workspaceProcedure
     .meta({ description: 'add package to monorepo' })
     .input(
@@ -34,7 +33,6 @@ export const cliRouter = router({
 
 const cli = createCli({
   router: cliRouter,
-
   name: 'Reactlith CLI',
   description: 'Create a full-stack, typesafe, rock-solid React monorepo',
   version: '0.0.1',
@@ -42,8 +40,18 @@ const cli = createCli({
 });
 await cli.run({
   logger: {
-    info: (...args) => args.forEach((arg) => log.info(arg as string)),
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    error: () => {},
+    info: (...args: unknown[]) =>
+      args
+        .filter(
+          (arg): arg is string => typeof arg === 'string' && arg.trim() != '',
+        )
+        .forEach((arg) => log.info(arg)),
+    error: (...args: unknown[]) =>
+      args
+        .filter(
+          (arg): arg is string => typeof arg === 'string' && arg.trim() != '',
+        )
+        .forEach((arg) => log.error(arg)),
   },
+  prompts: await import('@clack/prompts'),
 });

@@ -83,7 +83,7 @@ async function getPackages(workspaceRoot: string) {
   );
   const filteredPackages = packages
     .flat()
-    .filter((pkg): pkg is WorkspacePackageInfo => pkg !== undefined);
+    .filter((pkg): pkg is WorkspacePackageInfo => pkg != undefined);
   return filteredPackages;
 }
 

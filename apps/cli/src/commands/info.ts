@@ -1,7 +1,7 @@
 import { workspaceProcedure } from '~/init';
 
 export const infoCommand = workspaceProcedure
-  .meta({ description: 'Get information about monorepo' })
+  .meta({ description: 'get information about monorepo' })
   .query(({ ctx }) => {
     const workspace = ctx.workspace;
     console.log(`Workspace root: ${workspace.workspaceRoot}`);
