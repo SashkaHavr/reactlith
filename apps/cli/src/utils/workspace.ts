@@ -70,18 +70,20 @@ async function getPackages(workspaceRoot: string) {
       );
       if (await fs.exists(packageTypeDir)) {
         const dirEntries = await fs.readdir(packageTypeDir);
-        for (const entry of dirEntries) {
-          return await getPackageInternal(
-            path.join(packageTypeDir, entry),
-            packageType,
-          );
-        }
+        return await Promise.all(
+          dirEntries.map(async (entry) => {
+            return await getPackageInternal(
+              path.join(packageTypeDir, entry),
+              packageType,
+            );
+          }),
+        );
       }
     }),
   );
-  const filteredPackages = packages.filter(
-    (pkg): pkg is WorkspacePackageInfo => pkg !== undefined,
-  );
+  const filteredPackages = packages
+    .flat()
+    .filter((pkg): pkg is WorkspacePackageInfo => pkg !== undefined);
   return filteredPackages;
 }
 
