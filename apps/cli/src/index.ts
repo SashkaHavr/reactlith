@@ -1,14 +1,15 @@
 #!/bin/env node
 import { createCli, z } from 'trpc-cli';
 
+import { infoCommand } from './commands/info';
 import { createContext } from './context';
-import { procedure, router } from './init';
+import { publicProcedure, router, workspaceProcedure } from './init';
 
 export const cliRouter = router({
-  create: procedure
+  create: publicProcedure
     .meta({ description: 'create monorepo' })
     .query(() => console.log('Init')),
-  add: procedure
+  add: workspaceProcedure
     .meta({ description: 'add package to monorepo' })
     .input(
       z.tuple([
@@ -19,12 +20,15 @@ export const cliRouter = router({
       ]),
     )
     .query(({ input: [type] }) => console.log('Add ' + type)),
-  fix: procedure
-    .meta({ description: 'add common parts to existing package in monorepo' })
+  fix: workspaceProcedure
+    .meta({
+      description: 'add/fix common parts to existing package in monorepo',
+    })
     .query(() => console.log('Fix')),
-  integrate: procedure
-    .meta({ description: 'add another package from monorepo' })
+  include: workspaceProcedure
+    .meta({ description: 'include another package from monorepo' })
     .query(() => console.log('Init')),
+  info: infoCommand,
 });
 
 const cli = createCli({
@@ -32,6 +36,6 @@ const cli = createCli({
   name: 'Reactlith CLI',
   description: 'Create a full-stack, typesafe, rock-solid React monorepo',
   version: '0.0.1',
-  context: () => createContext(),
+  context: await createContext(),
 });
 await cli.run();

@@ -1,0 +1,5 @@
+**/*.gen.ts
+**/*.handlebars
+**/assets
+**/android
+**/ios

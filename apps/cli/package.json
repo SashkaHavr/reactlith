@@ -26,7 +26,10 @@
   },
   "prettier": "@reactlith/prettier-config",
   "dependencies": {
+    "@clack/prompts": "^0.11.0",
     "@trpc/server": "catalog:trpc",
+    "fs-extra": "^11.3.0",
+    "picocolors": "^1.1.1",
     "trpc-cli": "catalog:trpc",
     "zod": "catalog:"
   },
@@ -34,8 +37,10 @@
     "@reactlith/eslint-config": "workspace:*",
     "@reactlith/prettier-config": "workspace:*",
     "@reactlith/typescript-config": "workspace:*",
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "catalog:",
     "tsup": "catalog:",
+    "type-fest": "^4.41.0",
     "typescript": "catalog:"
   }
 }

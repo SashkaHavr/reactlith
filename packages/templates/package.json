@@ -1,0 +1,14 @@
+{
+  "name": "@reactlith/templates",
+  "private": "true",
+  "scripts": {
+    "clean": "git clean -xdf .turbo node_modules",
+    "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",
+    "format:check": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --check"
+  },
+  "prettier": "@reactlith/prettier-config",
+  "dependencies": {},
+  "devDependencies": {
+    "@reactlith/prettier-config": "workspace:*"
+  }
+}

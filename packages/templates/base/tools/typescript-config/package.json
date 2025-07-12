@@ -1,0 +1,8 @@
+{
+  "name": "@reactlith-template/typescript-config",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./tsconfig.json"
+  }
+}

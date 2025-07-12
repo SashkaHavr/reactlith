@@ -1,0 +1,44 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "start": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env", ".env.local"],
+      "outputs": ["dist"],
+      "env": ["VITE_*"]
+    },
+    "format": {
+      "cache": false
+    },
+    "format:check": {
+      "outputLogs": "errors-only"
+    },
+    "lint": {
+      "dependsOn": ["^build"],
+      "outputLogs": "errors-only"
+    },
+    "lint:fix": {
+      "dependsOn": ["^build"],
+      "cache": false
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputLogs": "errors-only"
+    },
+    "clean": {
+      "cache": false
+    },
+    "test": {
+      "outputLogs": "full"
+    },
+    "//#clean:root": {
+      "cache": false
+    }
+  }
+}

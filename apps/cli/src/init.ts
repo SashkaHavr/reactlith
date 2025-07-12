@@ -1,8 +1,10 @@
 import type { TrpcCliMeta } from 'trpc-cli';
 import { initTRPC } from '@trpc/server';
-import z, { ZodError } from 'zod/v4';
+import pc from 'picocolors';
+import z, { ZodError } from 'zod';
 
 import type { Context } from './context';
+import { UserInputError } from './utils/error';
 
 const t = initTRPC
   .meta<TrpcCliMeta>()
@@ -25,4 +27,19 @@ const t = initTRPC
 
 export const router = t.router;
 
-export const procedure = t.procedure;
+export const publicProcedure = t.procedure;
+
+export const workspaceProcedure = t.procedure.use(({ ctx, next }) => {
+  if (!ctx.workspace) {
+    throw new UserInputError({
+      message: 'Monorepo was not found',
+      hint: `Make sure you are in the root of the monorepo or use ${pc.italic('npx reactlith init')} to create one.`,
+    });
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      workspace: ctx.workspace,
+    },
+  });
+});
