@@ -1,4 +1,4 @@
-#!/bin/env node
+#!/usr/bin/env node
 import { createCli, z } from 'trpc-cli';
 
 import { infoCommand } from './commands/info';

@@ -2,6 +2,21 @@
   "name": "reactlith",
   "version": "0.0.1",
   "description": "Create a full-stack, typesafe, rock-solid React monorepo",
+  "keywords": [
+    "init.tips",
+    "monorepo",
+    "react",
+    "typescript",
+    "tanstack",
+    "tailwind",
+    "tRPC",
+    "drizzle",
+    "turbo",
+    "cli",
+    "reactlith",
+    "reactlith-cli",
+    "i18n"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/SashkaHavr/reactlith.git",
@@ -13,6 +28,10 @@
   "bin": {
     "reactlith": "./dist/index.js"
   },
+  "files": [
+    "dist",
+    "package.json"
+  ],
   "scripts": {
     "build": "tsup",
     "clean": "git clean -xdf .turbo node_modules",
