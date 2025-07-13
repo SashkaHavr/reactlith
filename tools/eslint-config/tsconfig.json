@@ -1,3 +1,4 @@
 {
-  "extends": "@reactlith/typescript-config"
+  "extends": "@reactlith/typescript-config",
+  "include": ["./**/*.config.js", "./**/*.ts", "./**/*.tsx"]
 }
