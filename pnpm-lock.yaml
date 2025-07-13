@@ -95,11 +95,7 @@ importers:
         specifier: 'catalog:'
         version: 5.8.2
 
-  packages/templates:
-    devDependencies:
-      '@reactlith/prettier-config':
-        specifier: workspace:*
-        version: link:../../tools/prettier-config
+  packages/templates: {}
 
   tools/eslint-config:
     devDependencies:
