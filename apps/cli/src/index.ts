@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { log } from '@clack/prompts';
-import { createCli, z } from 'trpc-cli';
+import { createCli } from 'trpc-cli';
 
+import { addCommand } from './commands/add';
 import { createCommand } from './commands/create';
 import { infoCommand } from './commands/info';
 import { createContext } from './context';
@@ -9,17 +10,7 @@ import { router, workspaceProcedure } from './init';
 
 export const cliRouter = router({
   create: createCommand,
-  add: workspaceProcedure
-    .meta({ description: 'add package to monorepo' })
-    .input(
-      z.tuple([
-        z.enum(['app', 'package', 'tool']).meta({
-          title: 'package type',
-          description: 'type of package to add',
-        }),
-      ]),
-    )
-    .query(({ input: [type] }) => console.log('Add ' + type)),
+  add: addCommand,
   fix: workspaceProcedure
     .meta({
       description: 'add/fix common parts to existing package in monorepo',

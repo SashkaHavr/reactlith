@@ -23,7 +23,7 @@ export const packageTypes = [
   'auth',
   'db',
   'trpc',
-  'locale',
+  'i18n',
   'env',
 ] as const;
 export type PackageType = (typeof packageTypes)[number];
@@ -33,3 +33,4 @@ export type ToolType = (typeof toolTypes)[number];
 
 export const TEMPLATE_MODULE = '@reactlith/templates';
 export const TEMPLATE_NAME = 'reactlith-template';
+export const TEMPLATE_PACKAGE_NAME = 'reactlith-package';

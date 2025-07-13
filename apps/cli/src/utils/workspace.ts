@@ -16,8 +16,8 @@ import {
 import { CliError } from './error';
 import { getPackageJson } from './getPackageJson';
 
-interface Workspace {
-  packageJson: PackageJson;
+export interface Workspace {
+  packageJson: PackageJson & { name: string };
   workspaceRoot: string;
   packages: WorkspacePackageInfo[];
 }
@@ -49,13 +49,14 @@ async function getWorkspaceInternal(
 ) {
   if (
     !packageJson.devDependencies ||
-    !('turbo' in packageJson.devDependencies)
+    !('turbo' in packageJson.devDependencies) ||
+    !packageJson.name
   ) {
     throw new CliError({ message: 'Not a Reactlith workspace' });
   }
 
   return {
-    packageJson: packageJson,
+    packageJson: packageJson as PackageJson & { name: string },
     workspaceRoot: workspaceRoot,
     packages: await getPackages(workspaceRoot),
   };
@@ -88,7 +89,7 @@ async function getPackages(workspaceRoot: string) {
 }
 
 interface BaseWorkspacePackageInfo {
-  packageJson: PackageJson;
+  packageJson: PackageJson & { name: string };
   packageRoot: string;
   type: WorkspacePackageType;
 }
@@ -137,7 +138,7 @@ async function getPackageInternal(
   }
 
   const baseInfo: BaseWorkspacePackageInfo = {
-    packageJson: packageJson,
+    packageJson: packageJson as PackageJson & { name: string },
     packageRoot: packagePath,
     type: packageType,
   };
@@ -192,7 +193,7 @@ async function getPackageType(
       'use-intl' in packageJson.dependencies &&
       (await fs.exists(path.join(packageRoot, 'messages')))
     ) {
-      return 'locale';
+      return 'i18n';
     }
     if ('@t3-oss/env-core' in packageJson.dependencies) {
       return 'env';

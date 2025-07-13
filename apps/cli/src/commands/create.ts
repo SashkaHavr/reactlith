@@ -20,25 +20,21 @@ import { getWorkspace } from '~/utils/workspace';
 
 const workspaceRootNameRegex = /^(?:[a-z0-9-~])[a-z0-9-._~]*$/;
 
-const inputSchema = z.tuple([
-  z
-    .string()
-    .nonempty()
-    .optional()
-    .meta({ title: 'name', description: 'name of the monorepo' }),
-]);
+const nameSchema = z
+  .string()
+  .nonempty()
+  .meta({ title: 'name', description: 'name of the monorepo' });
+
+const inputSchema = z.tuple([nameSchema.optional()]);
 
 const promptSchema = z.object({
-  name: z.string().nonempty().meta({
-    title: 'name',
-    description: 'name of the monorepo',
-  }),
+  name: nameSchema,
 });
 
 export const createCommand = publicProcedure
   .meta({ description: 'create monorepo' })
   .input(inputSchema)
-  .query(async ({ input }) => {
+  .query(async ({ input: [inputName] }) => {
     const workspace = await getWorkspace();
     if (workspace) {
       throw new UserInputError({
@@ -46,19 +42,19 @@ export const createCommand = publicProcedure
         hint: `Use ${format.command('add')} to add packages.`,
       });
     }
-    const promptInputs = await prompts.group({
+    const promptInput = await prompts.group({
       name: () =>
-        input[0]
-          ? Promise.resolve(input[0])
+        inputName
+          ? Promise.resolve(inputName)
           : prompts.text({
               message: 'name of the monorepo',
             }),
     });
-    promptSchema.parse(promptInputs);
+    const parsedInput = promptSchema.parse(promptInput);
 
-    const workspacePath = path.resolve(CWD, promptInputs.name);
+    const workspacePath = path.resolve(CWD, parsedInput.name);
     const workspaceName =
-      promptInputs.name == '.'
+      parsedInput.name == '.'
         ? path.basename(CWD)
         : path.basename(workspacePath);
 
@@ -81,39 +77,39 @@ export const createCommand = publicProcedure
 
     await prompts.tasks([
       {
-        title: 'Create workspace directory',
+        title: 'Creating workspace directory...',
         task: () => fs.mkdirp(workspacePath),
       },
       {
-        title: 'Copy workspace template',
+        title: 'Copying workspace template...',
         task: () => copyBaseWorkspaceTemplate({ workspacePath, workspaceName }),
       },
       {
-        title: 'Initialize git repository',
+        title: 'Initializing git repository...',
         task: () => gitInit(workspacePath),
       },
       {
-        title: 'Update dependencies',
+        title: 'Updating dependencies...',
         task: (message) => updateDependencies(workspacePath, message),
       },
       {
-        title: 'Install dependencies',
+        title: 'Installing dependencies...',
         task: (message) => pnpmInstall(workspacePath, message),
       },
       {
-        title: 'Format workspace',
+        title: 'Formatting files...',
         task: async () => {
           await pnpmFormat(workspacePath);
         },
       },
       {
-        title: 'Stage changes',
+        title: 'Staging changes...',
         task: async () => {
           await gitStageAll(workspacePath);
         },
       },
       {
-        title: 'Check workspace',
+        title: 'Checking workspace...',
         task: (message) => pnpmCheck(workspacePath, message),
       },
     ]);
