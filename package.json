@@ -18,7 +18,6 @@
     "lint:fix": "turbo lint:fix",
     "start": "turbo start",
     "test": "turbo test",
-    "test:watch": "turbo test:watch",
     "typecheck": "turbo typecheck"
   },
   "prettier": "@reactlith/prettier-config",
