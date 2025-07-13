@@ -30,3 +30,6 @@ export type PackageType = (typeof packageTypes)[number];
 
 export const toolTypes = ['base', 'tsconfig', 'eslint', 'prettier'] as const;
 export type ToolType = (typeof toolTypes)[number];
+
+export const TEMPLATE_MODULE = '@reactlith/templates';
+export const TEMPLATE_NAME = 'reactlith-template';

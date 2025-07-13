@@ -116,7 +116,7 @@ export async function getPackage(
   const parentDirName =
     pathSegments.length >= 2 ? pathSegments[pathSegments.length - 2] : '';
   const type = workspacePackageTypes.find(
-    (key) => workspacePackageTypeToDir[key] === parentDirName,
+    (key) => workspacePackageTypeToDir[key] == parentDirName,
   );
   if (!type) return;
 
@@ -131,7 +131,7 @@ async function getPackageInternal(
   if (
     !packageJson ||
     (packageJson.devDependencies && 'turbo' in packageJson.devDependencies) ||
-    packageJson.name === undefined
+    packageJson.name == undefined
   ) {
     return;
   }

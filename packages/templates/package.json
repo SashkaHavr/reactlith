@@ -1,6 +1,18 @@
 {
   "name": "@reactlith/templates",
-  "private": "true",
+  "version": "0.1.0",
+  "description": "Templates for Reactlith CLI",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SashkaHavr/reactlith.git",
+    "directory": "packages/templates"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": "./",
+  "files": [
+    "./"
+  ],
   "scripts": {
     "clean": "git clean -xdf .turbo node_modules",
     "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",

@@ -43,13 +43,13 @@ await cli.run({
     info: (...args: unknown[]) =>
       args
         .filter(
-          (arg): arg is string => typeof arg === 'string' && arg.trim() != '',
+          (arg): arg is string => typeof arg == 'string' && arg.trim() != '',
         )
         .forEach((arg) => log.info(arg)),
     error: (...args: unknown[]) =>
       args
         .filter(
-          (arg): arg is string => typeof arg === 'string' && arg.trim() != '',
+          (arg): arg is string => typeof arg == 'string' && arg.trim() != '',
         )
         .forEach((arg) => log.error(arg)),
   },

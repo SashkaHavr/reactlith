@@ -1,6 +1,6 @@
 {
   "name": "reactlith",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Create a full-stack, typesafe, rock-solid React monorepo",
   "keywords": [
     "init.tips",
@@ -46,6 +46,7 @@
   "prettier": "@reactlith/prettier-config",
   "dependencies": {
     "@clack/prompts": "^0.11.0",
+    "@reactlith/templates": "workspace:*",
     "@trpc/server": "catalog:trpc",
     "execa": "^9.6.0",
     "fs-extra": "^11.3.0",

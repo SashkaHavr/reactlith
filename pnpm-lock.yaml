@@ -42,6 +42,9 @@ importers:
       '@clack/prompts':
         specifier: ^0.11.0
         version: 0.11.0
+      '@reactlith/templates':
+        specifier: workspace:*
+        version: link:../../packages/templates
       '@trpc/server':
         specifier: catalog:trpc
         version: 11.4.3(typescript@5.8.2)
