@@ -1,4 +1,5 @@
 import * as prompts from '@clack/prompts';
+import { z } from 'trpc-cli';
 
 import { packageProcedure } from '~/init';
 import { pnpmCheck, pnpmFormat, pnpmInstall } from '~/utils/cli-tools';
@@ -6,9 +7,21 @@ import { CliError, UserInputError } from '~/utils/error';
 import { format } from '~/utils/format';
 import { includePackage } from '~/utils/include-package';
 
+const packageNameSchema = z
+  .string()
+  .nonempty()
+  .meta({ title: 'name', description: 'name of the package in workspace' });
+
+const inputSchema = z.tuple([packageNameSchema.optional()]);
+
+const promptSchema = z.object({
+  packageName: packageNameSchema,
+});
+
 export const includeCommand = packageProcedure
   .meta({ description: 'include another package from monorepo' })
-  .query(async ({ ctx }) => {
+  .input(inputSchema)
+  .query(async ({ ctx, input: [inputPackageName] }) => {
     const availablePackages = ctx.workspace.packages.filter(
       (pkg) =>
         ctx.package.packageJson.dependencies?.[pkg.packageJson.name] ==
@@ -23,35 +36,34 @@ export const includeCommand = packageProcedure
         hint: `Use ${format.command('add')} to add packages.`,
       });
     }
-    const input = await prompts.group({
+    const promptInput = await prompts.group({
       packageName: () =>
-        prompts.select({
-          message: 'Select a package to include',
-          options: availablePackages.map((pkg) => ({
-            value: pkg.packageJson.name,
-            label: pkg.packageJson.name,
-            hint:
-              pkg.type +
-              ' - ' +
-              (pkg.type == 'app'
-                ? pkg.appType
-                : pkg.type == 'package'
-                  ? pkg.packageType
-                  : pkg.toolType),
-          })),
-        }),
+        inputPackageName
+          ? Promise.resolve(inputPackageName)
+          : prompts.select({
+              message: 'Select a package to include',
+              options: availablePackages.map((pkg) => ({
+                value: pkg.packageJson.name,
+                label: pkg.packageJson.name,
+                hint:
+                  pkg.type +
+                  ' - ' +
+                  (pkg.type == 'app'
+                    ? pkg.appType
+                    : pkg.type == 'package'
+                      ? pkg.packageType
+                      : pkg.toolType),
+              })),
+            }),
     });
-    const packageToInclude = ctx.workspace.packages.find(
-      (pkg) => pkg.packageJson.name == input.packageName,
+    const parsedInput = promptSchema.parse(promptInput);
+
+    const packageToInclude = availablePackages.find(
+      (pkg) => pkg.packageJson.name == parsedInput.packageName,
     );
     if (!packageToInclude) {
       throw new CliError({
-        message: `Package ${input.packageName} not found in workspace`,
-      });
-    }
-    if (!availablePackages.includes(packageToInclude)) {
-      throw new CliError({
-        message: `Package ${packageToInclude.packageJson.name} is already included`,
+        message: `Package ${parsedInput.packageName} not found in workspace or already included.`,
       });
     }
 
