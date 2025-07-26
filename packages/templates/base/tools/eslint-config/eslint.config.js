@@ -10,6 +10,7 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   includeIgnoreFile(path.join(import.meta.dirname, '../../.gitignore')),
+  { ignores: ['**/*.config.*', '**/*.js'] },
   {
     extends: [js.configs.recommended],
     rules: {

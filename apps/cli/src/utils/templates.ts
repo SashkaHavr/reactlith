@@ -119,15 +119,11 @@ export async function getAddPackageTask(config: {
   packagePath: string;
   type: AppType | PackageType | ToolType;
 }) {
-  if (config.type === 'base') {
-    return copyPackageTemplate('basePackage', config);
-  }
-
   switch (config.workspacePackageType) {
     case 'app':
       switch (config.type) {
         case 'web':
-          // TODO: handle web app
+          await copyPackageTemplate('app-base', config);
           break;
         case 'api':
           // TODO: handle api app
@@ -137,7 +133,7 @@ export async function getAddPackageTask(config: {
     case 'package':
       switch (config.type) {
         case 'auth':
-          // TODO: handle auth package
+          await copyPackageTemplate('package-base', config);
           break;
         case 'db':
           // TODO: handle db package
@@ -155,6 +151,9 @@ export async function getAddPackageTask(config: {
       break;
     case 'tool':
       switch (config.type) {
+        case 'base':
+          await copyPackageTemplate('tool-base', config);
+          break;
         case 'tsconfig':
           // TODO: handle tsconfig tool
           break;
