@@ -11,12 +11,12 @@ import {
   pnpmFormat,
   pnpmInstall,
   updateDependencies,
-} from '~/utils/cliTools';
+} from '~/utils/cli-tools';
 import { CWD } from '~/utils/consts';
 import { UserInputError } from '~/utils/error';
 import { format } from '~/utils/format';
-import { copyBaseWorkspaceTemplate } from '~/utils/templates';
-import { getWorkspace } from '~/utils/workspace';
+import { addPackage, copyBaseWorkspaceTemplate } from '~/utils/templates';
+import { getWorkspace, getWorkspaceFromPathDefined } from '~/utils/workspace';
 
 const workspaceRootNameRegex = /^(?:[a-z0-9-~])[a-z0-9-._~]*$/;
 
@@ -83,6 +83,36 @@ export const createCommand = publicProcedure
       {
         title: 'Copying workspace template...',
         task: () => copyBaseWorkspaceTemplate({ workspacePath, workspaceName }),
+      },
+      {
+        title: 'Copying typescript config template...',
+        task: async () =>
+          await addPackage({
+            workspace: await getWorkspaceFromPathDefined(workspacePath),
+            workspacePackageType: 'tool',
+            packageName: 'typescript-config',
+            type: 'typescript-config',
+          }),
+      },
+      {
+        title: 'Copying prettier config template...',
+        task: async () =>
+          await addPackage({
+            workspace: await getWorkspaceFromPathDefined(workspacePath),
+            workspacePackageType: 'tool',
+            packageName: 'prettier-config',
+            type: 'prettier-config',
+          }),
+      },
+      {
+        title: 'Copying eslint config template...',
+        task: async () =>
+          await addPackage({
+            workspace: await getWorkspaceFromPathDefined(workspacePath),
+            workspacePackageType: 'tool',
+            packageName: 'eslint-config',
+            type: 'eslint-config',
+          }),
       },
       {
         title: 'Initializing git repository...',

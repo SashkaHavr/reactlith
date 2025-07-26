@@ -4,7 +4,7 @@ import { initTRPC } from '@trpc/server';
 import { ZodError } from 'zod';
 
 import type { Context } from './context';
-import { toolIsMissing } from './utils/cliTools';
+import { toolIsMissing } from './utils/cli-tools';
 import { CliError, UserInputError } from './utils/error';
 import { format } from './utils/format';
 
@@ -91,6 +91,21 @@ export const workspaceProcedure = publicProcedure.use(({ ctx, next }) => {
     ctx: {
       ...ctx,
       workspace: ctx.workspace,
+    },
+  });
+});
+
+export const packageProcedure = workspaceProcedure.use(({ ctx, next }) => {
+  if (!ctx.package) {
+    throw new UserInputError({
+      message: 'Package was not found',
+      hint: `Make sure you are in the root of the package or use ${format.command('add')} to create one.`,
+    });
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      package: ctx.package,
     },
   });
 });

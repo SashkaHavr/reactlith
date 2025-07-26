@@ -1,17 +1,12 @@
-import path from 'path';
 import * as prompts from '@clack/prompts';
 import { z } from 'trpc-cli';
 
+import type { AppType, PackageType, ToolType } from '~/utils/consts';
 import { workspaceProcedure } from '~/init';
-import { pnpmCheck, pnpmFormat, pnpmInstall } from '~/utils/cliTools';
-import {
-  appTypes,
-  packageTypes,
-  toolTypes,
-  workspacePackageTypeToDir,
-} from '~/utils/consts';
+import { pnpmCheck, pnpmFormat, pnpmInstall } from '~/utils/cli-tools';
+import { appTypes, packageTypes, toolTypes } from '~/utils/consts';
 import { UserInputError } from '~/utils/error';
-import { getAddPackageTask } from '~/utils/templates';
+import { addPackage } from '~/utils/templates';
 
 const packageNameRegex =
   /^(?:(?:@(?:[a-z0-9-*~][a-z0-9-*._~]*)?\/[a-z0-9-._~])|[a-z0-9-~])[a-z0-9-._~]*$/;
@@ -64,7 +59,7 @@ export const addCommand = workspaceProcedure
         }
         switch (workspacePackageType) {
           case 'app':
-            return prompts.select({
+            return prompts.select<AppType>({
               message: 'Select app type',
               options: [
                 { value: 'base', label: 'Base App' },
@@ -73,25 +68,25 @@ export const addCommand = workspaceProcedure
               ],
             });
           case 'package':
-            return prompts.select({
+            return prompts.select<PackageType>({
               message: 'Select package type',
               options: [
                 { value: 'base', label: 'Base Package' },
                 { value: 'auth', label: 'Auth Package' },
                 { value: 'db', label: 'DB Package' },
                 { value: 'trpc', label: 'tRPC Package' },
-                { value: 'i18n', label: 'i18n Package' },
+                { value: 'intl', label: 'i18n Package' },
                 { value: 'env', label: 'Env Package' },
               ],
             });
           case 'tool':
-            return prompts.select({
+            return prompts.select<ToolType>({
               message: 'Select tool type',
               options: [
                 { value: 'base', label: 'Base Tool' },
-                { value: 'tsconfig', label: 'TSConfig' },
-                { value: 'eslint', label: 'ESLint Config' },
-                { value: 'prettier', label: 'Prettier Config' },
+                { value: 'typescript-config', label: 'TSConfig' },
+                { value: 'eslint-config', label: 'ESLint Config' },
+                { value: 'prettier-config', label: 'Prettier Config' },
               ],
             });
         }
@@ -112,24 +107,28 @@ export const addCommand = workspaceProcedure
       });
     }
 
-    const packagePath = path.join(
-      ctx.workspace.workspaceRoot,
-      workspacePackageTypeToDir[parsedInput.workspacePackageType],
-      parsedInput.packageName,
-    );
+    if (
+      ctx.workspace.packages.some(
+        (pkg) => pkg.packageJson.name == parsedInput.packageName,
+      )
+    ) {
+      throw new UserInputError({
+        message: `Package ${parsedInput.packageName} already exists in the workspace.`,
+        hint: 'Please choose a different package name.',
+      });
+    }
 
     const templateConfig = {
       workspace: ctx.workspace,
       workspacePackageType: parsedInput.workspacePackageType,
       packageName: parsedInput.packageName,
-      packagePath: packagePath,
     };
 
     await prompts.tasks([
       {
         title: `Add ${parsedInput.type} package in ${ctx.workspace.packageJson.name} under ${parsedInput.workspacePackageType}`,
         task: () =>
-          getAddPackageTask({
+          addPackage({
             ...templateConfig,
             type: parsedInput.type,
           }),
@@ -142,7 +141,7 @@ export const addCommand = workspaceProcedure
       {
         title: 'Formatting files...',
         task: async () => {
-          await pnpmFormat(packagePath);
+          await pnpmFormat(ctx.workspace.workspaceRoot);
         },
       },
       {

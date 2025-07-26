@@ -4,21 +4,15 @@ import { createCli } from 'trpc-cli';
 
 import { addCommand } from './commands/add';
 import { createCommand } from './commands/create';
+import { includeCommand } from './commands/include';
 import { infoCommand } from './commands/info';
 import { createContext } from './context';
-import { router, workspaceProcedure } from './init';
+import { router } from './init';
 
 export const cliRouter = router({
   create: createCommand,
   add: addCommand,
-  fix: workspaceProcedure
-    .meta({
-      description: 'add/fix common parts to existing package in monorepo',
-    })
-    .query(() => console.log('Fix')),
-  include: workspaceProcedure
-    .meta({ description: 'include another package from monorepo' })
-    .query(() => console.log('Init')),
+  include: includeCommand,
   info: infoCommand,
 });
 

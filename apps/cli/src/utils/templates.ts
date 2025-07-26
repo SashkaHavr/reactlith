@@ -8,11 +8,13 @@ import type {
   ToolType,
   WorkspacePackageType,
 } from './consts';
-import type { Workspace } from './workspace';
+import type { Workspace, WorkspacePackageInfo } from './workspace';
 import {
+  TEMPLATE_INCLUDE_BASE_PATH,
   TEMPLATE_MODULE,
   TEMPLATE_NAME,
   TEMPLATE_PACKAGE_NAME,
+  workspacePackageTypeToDir,
 } from './consts';
 import { CliError } from './error';
 
@@ -102,7 +104,7 @@ export async function copyPackageTemplate(
 
   await replaceInFileRecursive(
     TEMPLATE_NAME,
-    config.workspace.workspaceRoot,
+    config.packagePath,
     config.workspace.packageJson.name,
   );
   await replaceInFileRecursive(
@@ -112,18 +114,37 @@ export async function copyPackageTemplate(
   );
 }
 
-export async function getAddPackageTask(config: {
+export async function addPackage(config: {
   workspace: Workspace;
   workspacePackageType: WorkspacePackageType;
   packageName: string;
-  packagePath: string;
   type: AppType | PackageType | ToolType;
 }) {
+  const packagePath = path.join(
+    config.workspace.workspaceRoot,
+    workspacePackageTypeToDir[config.workspacePackageType],
+    config.packageName,
+  );
+
+  if (
+    (await fs.exists(packagePath)) &&
+    (await fs.readdir(packagePath)).length > 0
+  ) {
+    throw new CliError({
+      message: `Package ${config.packageName} already exists at ${packagePath}.`,
+    });
+  }
+
+  const updatedConfig = {
+    ...config,
+    packagePath,
+  };
+
   switch (config.workspacePackageType) {
     case 'app':
       switch (config.type) {
         case 'base':
-          await copyPackageTemplate('app-base', config);
+          await copyPackageTemplate('app-base', updatedConfig);
           break;
         case 'web':
           // TODO: handle web app
@@ -136,7 +157,7 @@ export async function getAddPackageTask(config: {
     case 'package':
       switch (config.type) {
         case 'base':
-          await copyPackageTemplate('package-base', config);
+          await copyPackageTemplate('package-base', updatedConfig);
           break;
         case 'auth':
           // TODO: handle auth package
@@ -147,7 +168,7 @@ export async function getAddPackageTask(config: {
         case 'trpc':
           // TODO: handle trpc package
           break;
-        case 'i18n':
+        case 'intl':
           // TODO: handle i18n package
           break;
         case 'env':
@@ -158,18 +179,46 @@ export async function getAddPackageTask(config: {
     case 'tool':
       switch (config.type) {
         case 'base':
-          await copyPackageTemplate('tool-base', config);
+          await copyPackageTemplate('tool-base', updatedConfig);
           break;
-        case 'tsconfig':
-          // TODO: handle tsconfig tool
+        case 'typescript-config':
+          await copyPackageTemplate('tool-typescript-config', updatedConfig);
           break;
-        case 'eslint':
-          // TODO: handle eslint tool
+        case 'eslint-config':
+          await copyPackageTemplate('tool-eslint-config', updatedConfig);
           break;
-        case 'prettier':
-          // TODO: handle prettier tool
+        case 'prettier-config':
+          await copyPackageTemplate('tool-prettier-config', updatedConfig);
           break;
       }
       break;
   }
+}
+
+export async function copyIncludeTemplate(
+  includeTemplateName: string,
+  config: {
+    workspace: Workspace;
+    currentPackage: WorkspacePackageInfo;
+    packageToInclude: WorkspacePackageInfo;
+  },
+) {
+  await copyTemplate(
+    TEMPLATE_INCLUDE_BASE_PATH + '/' + includeTemplateName,
+    config.currentPackage.packageRoot,
+  );
+
+  await replaceInFileRecursive(
+    TEMPLATE_NAME,
+    config.currentPackage.packageRoot,
+    config.workspace.packageJson.name,
+  );
+  await replaceInFileRecursive(
+    TEMPLATE_PACKAGE_NAME,
+    config.currentPackage.packageRoot,
+    config.packageToInclude.packageJson.name.replace(
+      new RegExp(`@${config.workspace.packageJson.name}/`, 'g'),
+      '',
+    ),
+  );
 }

@@ -14,7 +14,8 @@ import {
   workspacePackageTypeToDir,
 } from './consts';
 import { CliError } from './error';
-import { getPackageJson } from './getPackageJson';
+import { format } from './format';
+import { getPackageJson } from './package-json';
 
 export interface Workspace {
   packageJson: PackageJson & { name: string };
@@ -22,13 +23,21 @@ export interface Workspace {
   packages: WorkspacePackageInfo[];
 }
 
-export async function getWorkspace(): Promise<Workspace | undefined> {
-  const cwd = CWD;
-  const workspace = await getWorkspaceRecursive(cwd);
-  return workspace;
+export async function getWorkspace() {
+  return await getWorkspaceFromPath(CWD);
 }
 
-async function getWorkspaceRecursive(dir: string) {
+export async function getWorkspaceFromPathDefined(dir: string) {
+  const newWorkspace = await getWorkspaceFromPath(dir);
+  if (!newWorkspace) {
+    throw new CliError({
+      message: `Failed to find workspace at ${format.path(dir)}`,
+    });
+  }
+  return newWorkspace;
+}
+
+export async function getWorkspaceFromPath(dir: string) {
   const currentDir = path.resolve(dir);
   const packageJson = await getPackageJson(currentDir);
   if (
@@ -40,7 +49,7 @@ async function getWorkspaceRecursive(dir: string) {
   }
   const nextDir = path.resolve(dir, '..');
   if (nextDir == dir) return;
-  return getWorkspaceRecursive(nextDir);
+  return getWorkspaceFromPath(nextDir);
 }
 
 async function getWorkspaceInternal(
@@ -91,7 +100,6 @@ async function getPackages(workspaceRoot: string) {
 interface BaseWorkspacePackageInfo {
   packageJson: PackageJson & { name: string };
   packageRoot: string;
-  type: WorkspacePackageType;
 }
 
 interface PackageInfo extends BaseWorkspacePackageInfo {
@@ -108,7 +116,7 @@ interface ToolInfo extends BaseWorkspacePackageInfo {
   toolType: ToolType;
 }
 
-type WorkspacePackageInfo = PackageInfo | AppInfo | ToolInfo;
+export type WorkspacePackageInfo = PackageInfo | AppInfo | ToolInfo;
 
 export async function getPackage(
   packageRoot: string,
@@ -140,7 +148,6 @@ async function getPackageInternal(
   const baseInfo: BaseWorkspacePackageInfo = {
     packageJson: packageJson as PackageJson & { name: string },
     packageRoot: packagePath,
-    type: packageType,
   };
 
   switch (packageType) {
@@ -193,7 +200,7 @@ async function getPackageType(
       'use-intl' in packageJson.dependencies &&
       (await fs.exists(path.join(packageRoot, 'messages')))
     ) {
-      return 'i18n';
+      return 'intl';
     }
     if ('@t3-oss/env-core' in packageJson.dependencies) {
       return 'env';
@@ -209,10 +216,10 @@ async function getToolType(
   const { packageJson, packageRoot } = baseInfo;
   if (packageJson.devDependencies) {
     if ('eslint' in packageJson.devDependencies) {
-      return 'eslint';
+      return 'eslint-config';
     }
     if ('prettier' in packageJson.devDependencies) {
-      return 'prettier';
+      return 'prettier-config';
     }
   }
   if (
@@ -220,7 +227,7 @@ async function getToolType(
     !packageJson.devDependencies &&
     (await fs.exists(path.join(packageRoot, 'tsconfig.json')))
   ) {
-    return 'tsconfig';
+    return 'typescript-config';
   }
 
   return 'base';

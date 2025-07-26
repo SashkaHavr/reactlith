@@ -1,5 +1,5 @@
 {
-  "name": "@reactlith-template/typescript-config",
+  "name": "@reactlith-template/reactlith-package",
   "private": true,
   "type": "module",
   "exports": {

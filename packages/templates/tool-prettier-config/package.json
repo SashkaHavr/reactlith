@@ -1,5 +1,5 @@
 {
-  "name": "@reactlith-template/prettier-config",
+  "name": "@reactlith-template/reactlith-package",
   "private": true,
   "type": "module",
   "exports": {
