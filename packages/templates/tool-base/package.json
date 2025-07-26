@@ -2,6 +2,9 @@
   "name": "@reactlith-template/reactlith-package",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./index.ts"
+  },
   "scripts": {
     "clean": "git clean -xdf .turbo node_modules",
     "format": "prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write",

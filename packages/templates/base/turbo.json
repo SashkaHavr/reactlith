@@ -10,8 +10,8 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env", ".env.local"],
-      "outputs": ["dist"],
-      "env": ["VITE_*"]
+      "outputs": ["dist", ".output"],
+      "env": ["VITE_*", "NODE_ENV"]
     },
     "format": {
       "cache": false

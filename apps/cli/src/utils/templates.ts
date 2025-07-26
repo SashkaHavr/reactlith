@@ -122,8 +122,11 @@ export async function getAddPackageTask(config: {
   switch (config.workspacePackageType) {
     case 'app':
       switch (config.type) {
-        case 'web':
+        case 'base':
           await copyPackageTemplate('app-base', config);
+          break;
+        case 'web':
+          // TODO: handle web app
           break;
         case 'api':
           // TODO: handle api app
@@ -132,8 +135,11 @@ export async function getAddPackageTask(config: {
       break;
     case 'package':
       switch (config.type) {
-        case 'auth':
+        case 'base':
           await copyPackageTemplate('package-base', config);
+          break;
+        case 'auth':
+          // TODO: handle auth package
           break;
         case 'db':
           // TODO: handle db package
