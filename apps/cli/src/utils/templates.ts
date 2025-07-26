@@ -195,6 +195,13 @@ export async function addPackage(config: {
   }
 }
 
+export function getPackageNameWithoutWorkspace(
+  packageName: string,
+  workspaceName: string,
+): string {
+  return packageName.replace(new RegExp(`@${workspaceName}/`, 'g'), '');
+}
+
 export async function copyIncludeTemplate(
   includeTemplateName: string,
   config: {
@@ -216,9 +223,9 @@ export async function copyIncludeTemplate(
   await replaceInFileRecursive(
     TEMPLATE_PACKAGE_NAME,
     config.currentPackage.packageRoot,
-    config.packageToInclude.packageJson.name.replace(
-      new RegExp(`@${config.workspace.packageJson.name}/`, 'g'),
-      '',
+    getPackageNameWithoutWorkspace(
+      config.packageToInclude.packageJson.name,
+      config.workspace.packageJson.name,
     ),
   );
 }

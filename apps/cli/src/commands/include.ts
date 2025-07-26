@@ -6,6 +6,7 @@ import { pnpmCheck, pnpmFormat, pnpmInstall } from '~/utils/cli-tools';
 import { CliError, UserInputError } from '~/utils/error';
 import { format } from '~/utils/format';
 import { includePackage } from '~/utils/include-package';
+import { getPackageNameWithoutWorkspace } from '~/utils/templates';
 
 const packageNameSchema = z
   .string()
@@ -59,7 +60,12 @@ export const includeCommand = packageProcedure
     const parsedInput = promptSchema.parse(promptInput);
 
     const packageToInclude = availablePackages.find(
-      (pkg) => pkg.packageJson.name == parsedInput.packageName,
+      (pkg) =>
+        pkg.packageJson.name == parsedInput.packageName ||
+        getPackageNameWithoutWorkspace(
+          pkg.packageJson.name,
+          ctx.workspace.packageJson.name,
+        ) == parsedInput.packageName,
     );
     if (!packageToInclude) {
       throw new CliError({
