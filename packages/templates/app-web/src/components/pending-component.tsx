@@ -1,5 +1,5 @@
 import { useOptionalTranslations } from '~/lib/route-context-hooks';
-import { LoadingSpinner } from './ui/loading';
+import { LoadingSpinner } from './ui/loading-spinner';
 
 export function PendingComponent() {
   const t = useOptionalTranslations();

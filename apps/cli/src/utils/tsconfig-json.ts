@@ -36,6 +36,6 @@ export function addTsConfigPath(tsconfigJson: TsConfigJson) {
 
 export function targetDom(tsconfigJson: TsConfigJson) {
   tsconfigJson.compilerOptions ??= {};
-  tsconfigJson.compilerOptions.target = 'ES2022';
-  tsconfigJson.compilerOptions.lib = ['ES2022', 'DOM', 'DOM.Iterable'];
+  tsconfigJson.compilerOptions.target = 'ES2024';
+  tsconfigJson.compilerOptions.lib = ['ES2024', 'DOM', 'DOM.Iterable'];
 }
