@@ -159,6 +159,12 @@ export async function addPackage(config: {
     packagePath,
     config.workspace.packageJson.name,
   );
+
+  if (await fs.exists(path.join(packagePath, 'prettier.config.js'))) {
+    const packageJson = await getPackageJson(packagePath);
+    delete packageJson.prettier;
+    await savePackageJson(packagePath, packageJson);
+  }
 }
 
 async function includeDependenciesAfterAdd(
