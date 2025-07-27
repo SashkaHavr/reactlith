@@ -33,6 +33,7 @@ import {
   addTsConfigPath,
   getTsConfigJson,
   saveTsConfigJson,
+  targetDom,
 } from './tsconfig-json';
 import { getPackage, getWorkspaceFromPathDefined } from './workspace';
 
@@ -76,12 +77,13 @@ export async function addPackage(config: {
 
   switch (config.workspacePackageType) {
     case 'app':
+      addTsConfigPath(currentTsConfigJson);
       switch (config.type) {
         case 'base':
-          addTsConfigPath(currentTsConfigJson);
           break;
         case 'web':
-          // TODO: handle web app
+          await copyTemplate('app-web', packagePath);
+          targetDom(currentTsConfigJson);
           break;
         case 'api':
           // TODO: handle api app
@@ -190,6 +192,15 @@ async function includeDependenciesAfterAdd(
   }
 
   switch (config.workspacePackageType) {
+    case 'app':
+      switch (config.type) {
+        case 'web':
+          await includePackage('trpc');
+          await includePackage('auth');
+          await includePackage('intl');
+          break;
+      }
+      break;
     case 'package':
       switch (config.type) {
         case 'auth':

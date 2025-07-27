@@ -33,3 +33,9 @@ export function addTsConfigPath(tsconfigJson: TsConfigJson) {
   tsconfigJson.compilerOptions.paths ??= {};
   tsconfigJson.compilerOptions.paths['~/*'] = ['./src/*'];
 }
+
+export function targetDom(tsconfigJson: TsConfigJson) {
+  tsconfigJson.compilerOptions ??= {};
+  tsconfigJson.compilerOptions.target = 'ES2022';
+  tsconfigJson.compilerOptions.lib = ['ES2022', 'DOM', 'DOM.Iterable'];
+}
