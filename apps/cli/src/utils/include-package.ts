@@ -27,6 +27,7 @@ export async function includePackage(
   workspace: Workspace,
   currentPackage: WorkspacePackageInfo,
   packageToInclude: WorkspacePackageInfo,
+  replaceTemplateName = true,
 ) {
   const currentPackageJson = currentPackage.packageJson;
   const copyConfig = {
@@ -83,10 +84,17 @@ export async function includePackage(
   await saveTsConfigJson(currentPackage.packageRoot, currentTsConfigJson);
 
   await replaceInFileRecursive(
-    TEMPLATE_NAME,
+    `@${TEMPLATE_NAME}/${getWorkspacePackageInfoType(packageToInclude)}`,
     currentPackage.packageRoot,
-    workspace.packageJson.name,
+    packageToInclude.packageJson.name,
   );
+  if (replaceTemplateName) {
+    await replaceInFileRecursive(
+      TEMPLATE_NAME,
+      currentPackage.packageRoot,
+      workspace.packageJson.name,
+    );
+  }
   await replaceInFileRecursive(
     TEMPLATE_PACKAGE_NAME,
     currentPackage.packageRoot,
@@ -146,6 +154,6 @@ export async function includePackageByTypeInteractive(
         hint: `Please select a valid package from the list.`,
       });
     }
-    await includePackage(workspace, currentPackage, selectedPackage);
+    await includePackage(workspace, currentPackage, selectedPackage, false);
   }
 }

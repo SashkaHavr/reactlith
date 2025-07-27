@@ -34,7 +34,7 @@ import {
   getTsConfigJson,
   saveTsConfigJson,
 } from './tsconfig-json';
-import { getPackage } from './workspace';
+import { getPackage, getWorkspaceFromPathDefined } from './workspace';
 
 export async function addPackage(config: {
   workspace: Workspace;
@@ -71,33 +71,6 @@ export async function addPackage(config: {
     });
   }
 
-  if (config.type != 'typescript-config') {
-    await includePackageByTypeInteractive(
-      config.workspace,
-      currentPackage,
-      'typescript-config',
-    );
-  }
-
-  if (config.type != 'typescript-config' && config.type != 'prettier-config') {
-    await includePackageByTypeInteractive(
-      config.workspace,
-      currentPackage,
-      'prettier-config',
-    );
-  }
-  if (config.workspacePackageType != 'tool') {
-    await includePackageByTypeInteractive(
-      config.workspace,
-      currentPackage,
-      'eslint-config',
-    );
-  }
-
-  if (config.type == 'base') {
-    await addEmptyIndexTs(packagePath, config.workspacePackageType != 'tool');
-  }
-
   const currentPackageJson = await getPackageJson(packagePath);
   const currentTsConfigJson = await getTsConfigJson(packagePath);
 
@@ -116,25 +89,25 @@ export async function addPackage(config: {
       }
       break;
     case 'package':
+      addImports(currentPackageJson);
       switch (config.type) {
         case 'base':
           addExports(currentPackageJson, '.', './src/index.ts');
-          addImports(currentPackageJson);
           break;
         case 'auth':
-          // TODO: handle auth package
+          await copyTemplate('package-auth', packagePath);
           break;
         case 'db':
-          // TODO: handle db package
+          await copyTemplate('package-db', packagePath);
           break;
         case 'trpc':
-          // TODO: handle trpc package
+          await copyTemplate('package-trpc', packagePath);
           break;
         case 'intl':
-          // TODO: handle i18n package
+          await copyTemplate('package-intl', packagePath);
           break;
         case 'env':
-          // TODO: handle env package
+          await copyTemplate('package-env', packagePath);
           break;
       }
       break;
@@ -145,31 +118,22 @@ export async function addPackage(config: {
           break;
         case 'typescript-config':
           await copyTemplate('tool-typescript-config', packagePath);
-          addExports(currentPackageJson, '.', './tsconfig.json');
           currentPackageJson.devDependencies = undefined;
           currentPackageJson.scripts = undefined;
           break;
         case 'prettier-config':
           await copyTemplate('tool-prettier-config', packagePath);
-          copyPackageJsonInfo(
-            currentPackageJson,
-            await getPackageJson(packagePath),
-          );
           addScript(currentPackageJson, 'format');
           addScript(currentPackageJson, 'format:check');
-          addExports(currentPackageJson, '.', './prettier.config.js');
           break;
         case 'eslint-config':
           await copyTemplate('tool-eslint-config', packagePath);
-          copyPackageJsonInfo(
-            currentPackageJson,
-            await getPackageJson(packagePath),
-          );
-          addExports(currentPackageJson, '.', './eslint.config.js');
           break;
       }
       break;
   }
+
+  copyPackageJsonInfo(currentPackageJson, await getPackageJson(packagePath));
 
   await savePackageJson(packagePath, currentPackageJson);
   if (config.type != 'typescript-config') {
@@ -177,13 +141,69 @@ export async function addPackage(config: {
   }
 
   await replaceInFileRecursive(
-    TEMPLATE_NAME,
-    packagePath,
-    config.workspace.packageJson.name,
-  );
-  await replaceInFileRecursive(
     TEMPLATE_PACKAGE_NAME,
     packagePath,
     config.packageName,
   );
+
+  await includeDependenciesAfterAdd(packagePath, config);
+
+  await replaceInFileRecursive(
+    TEMPLATE_NAME,
+    packagePath,
+    config.workspace.packageJson.name,
+  );
+}
+
+async function includeDependenciesAfterAdd(
+  packagePath: string,
+  config: {
+    workspacePackageType: WorkspacePackageType;
+    type: AppType | PackageType | ToolType;
+  },
+) {
+  const workspace = await getWorkspaceFromPathDefined(packagePath);
+  const currentPackage = await getPackage(packagePath);
+
+  if (!currentPackage) {
+    throw new CliError({
+      message: `Failed to get package at ${packagePath}.`,
+    });
+  }
+
+  const includePackage = (pkg: AppType | PackageType | ToolType) =>
+    includePackageByTypeInteractive(workspace, currentPackage, pkg);
+
+  if (config.type != 'typescript-config') {
+    await includePackage('typescript-config');
+  }
+
+  if (config.type != 'typescript-config' && config.type != 'prettier-config') {
+    await includePackage('prettier-config');
+  }
+  if (config.workspacePackageType != 'tool') {
+    await includePackage('eslint-config');
+  }
+
+  if (config.type == 'base') {
+    await addEmptyIndexTs(packagePath, config.workspacePackageType != 'tool');
+  }
+
+  switch (config.workspacePackageType) {
+    case 'package':
+      switch (config.type) {
+        case 'auth':
+          await includePackage('db');
+          await includePackage('env');
+          break;
+        case 'db':
+          await includePackage('env');
+          break;
+        case 'trpc':
+          await includePackage('db');
+          await includePackage('env');
+          await includePackage('auth');
+          break;
+      }
+  }
 }

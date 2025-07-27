@@ -95,7 +95,7 @@ export const addCommand = workspaceProcedure
                   { value: 'auth', label: 'Auth Package' },
                   { value: 'db', label: 'DB Package' },
                   { value: 'trpc', label: 'tRPC Package' },
-                  { value: 'intl', label: 'i18n Package' },
+                  { value: 'intl', label: 'Internationalization Package' },
                   { value: 'env', label: 'Env Package' },
                 ],
               });
@@ -129,7 +129,10 @@ export const addCommand = workspaceProcedure
 
       if (
         ctx.workspace.packages.some(
-          (pkg) => pkg.packageJson.name == parsedInput.packageName,
+          (pkg) =>
+            pkg.packageJson.name == parsedInput.packageName ||
+            pkg.packageJson.name ==
+              `@${ctx.workspace.packageJson.name}/${parsedInput.packageName}`,
         )
       ) {
         throw new UserInputError({

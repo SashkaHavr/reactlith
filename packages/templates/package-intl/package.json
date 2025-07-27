@@ -1,0 +1,9 @@
+{
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "use-intl": "catalog:",
+    "zod": "catalog:"
+  }
+}

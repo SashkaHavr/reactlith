@@ -97,27 +97,23 @@ export function copyPackageJsonInfo(
   source: PackageJson,
 ) {
   if (source.dependencies) {
-    for (const dep in source.dependencies) {
-      if (source.dependencies[dep]) {
-        packageJson.dependencies ??= {};
-        packageJson.dependencies[dep] = source.dependencies[dep];
-      }
-    }
+    packageJson.dependencies ??= {};
+    Object.assign(packageJson.dependencies, source.dependencies);
   }
   if (source.devDependencies) {
-    for (const dep in source.devDependencies) {
-      if (source.devDependencies[dep]) {
-        packageJson.devDependencies ??= {};
-        packageJson.devDependencies[dep] = source.devDependencies[dep];
-      }
-    }
+    packageJson.devDependencies ??= {};
+    Object.assign(packageJson.devDependencies, source.devDependencies);
   }
   if (source.scripts) {
-    for (const script in source.scripts) {
-      if (source.scripts[script]) {
-        packageJson.scripts ??= {};
-        packageJson.scripts[script] = source.scripts[script];
-      }
-    }
+    packageJson.scripts ??= {};
+    Object.assign(packageJson.scripts, source.scripts);
+  }
+  if (
+    source.exports != null &&
+    typeof source.exports == 'object' &&
+    !Array.isArray(source.exports)
+  ) {
+    packageJson.exports ??= {};
+    Object.assign(packageJson.exports, source.exports);
   }
 }

@@ -1,0 +1,11 @@
+{
+  "exports": {
+    "./server": "./src/server.ts",
+    "./db": "./src/db.ts",
+    "./auth": "./src/auth.ts"
+  },
+  "dependencies": {
+    "@t3-oss/env-core": "catalog:",
+    "zod": "catalog:"
+  }
+}

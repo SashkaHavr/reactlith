@@ -1,0 +1,18 @@
+{
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts"
+  },
+  "scripts": {
+    "push": "drizzle-kit push",
+    "studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "drizzle-kit": "catalog:drizzle",
+    "drizzle-orm": "catalog:drizzle",
+    "pg": "catalog:drizzle"
+  },
+  "devDependencies": {
+    "@types/pg": "catalog:drizzle"
+  }
+}
