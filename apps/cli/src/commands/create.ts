@@ -4,6 +4,7 @@ import fs from 'fs-extra';
 import { z } from 'trpc-cli';
 
 import { publicProcedure } from '~/init';
+import { addPackage } from '~/utils/add-package';
 import {
   gitInit,
   gitStageAll,
@@ -15,7 +16,7 @@ import {
 import { CWD } from '~/utils/consts';
 import { UserInputError } from '~/utils/error';
 import { format } from '~/utils/format';
-import { addPackage, copyBaseWorkspaceTemplate } from '~/utils/templates';
+import { copyBaseWorkspaceTemplate } from '~/utils/templates';
 import { getWorkspace, getWorkspaceFromPathDefined } from '~/utils/workspace';
 
 const workspaceRootNameRegex = /^(?:[a-z0-9-~])[a-z0-9-._~]*$/;

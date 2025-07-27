@@ -3,10 +3,10 @@ import { z } from 'trpc-cli';
 
 import type { AppType, PackageType, ToolType } from '~/utils/consts';
 import { workspaceProcedure } from '~/init';
+import { addPackage } from '~/utils/add-package';
 import { pnpmCheck, pnpmFormat, pnpmInstall } from '~/utils/cli-tools';
 import { appTypes, packageTypes, toolTypes } from '~/utils/consts';
 import { UserInputError } from '~/utils/error';
-import { addPackage } from '~/utils/templates';
 
 const packageNameRegex =
   /^(?:(?:@(?:[a-z0-9-*~][a-z0-9-*._~]*)?\/[a-z0-9-._~])|[a-z0-9-~])[a-z0-9-._~]*$/;

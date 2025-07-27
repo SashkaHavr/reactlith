@@ -1,4 +1,5 @@
 import { workspaceProcedure } from '~/init';
+import { getWorkspacePackageInfoType } from '~/utils/workspace';
 
 export const infoCommand = workspaceProcedure
   .meta({ description: 'get information about monorepo' })
@@ -13,7 +14,7 @@ export const infoCommand = workspaceProcedure
     }
     workspace.packages.forEach((pkg) => {
       console.log(
-        `- ${pkg.packageJson.name} (${pkg.type}): ${pkg.type == 'app' ? pkg.appType : pkg.type == 'package' ? pkg.packageType : pkg.toolType}`,
+        `- ${pkg.packageJson.name} (${pkg.type}): ${getWorkspacePackageInfoType(pkg)}`,
       );
     });
     console.log(`Current package: ${ctx.package?.packageJson.name ?? 'N/A'}`);

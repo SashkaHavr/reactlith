@@ -13,5 +13,5 @@ export async function readJson<T extends object>(filePath: string) {
 }
 
 export async function saveJson<T extends object>(filePath: string, data: T) {
-  await fs.writeFile(filePath, JSON.stringify(data));
+  await fs.writeFile(filePath, JSON.stringify(data, null, 2));
 }

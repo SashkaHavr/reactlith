@@ -2,19 +2,11 @@ import { createRequire } from 'module';
 import path from 'path';
 import fs from 'fs-extra';
 
-import type {
-  AppType,
-  PackageType,
-  ToolType,
-  WorkspacePackageType,
-} from './consts';
 import type { Workspace, WorkspacePackageInfo } from './workspace';
 import {
   TEMPLATE_INCLUDE_BASE_PATH,
   TEMPLATE_MODULE,
   TEMPLATE_NAME,
-  TEMPLATE_PACKAGE_NAME,
-  workspacePackageTypeToDir,
 } from './consts';
 import { CliError } from './error';
 
@@ -33,7 +25,7 @@ async function replaceInFile(
   }
 }
 
-async function replaceInFileRecursive(
+export async function replaceInFileRecursive(
   stringToReplace: string,
   dir: string,
   workspaceName: string,
@@ -67,7 +59,7 @@ async function getTemplateModulePath() {
   });
 }
 
-async function copyTemplate(templateName: string, targetPath: string) {
+export async function copyTemplate(templateName: string, targetPath: string) {
   const templateModulePath = await getTemplateModulePath();
   const templatePath = path.join(templateModulePath, templateName);
   if (!(await fs.exists(templatePath))) {
@@ -91,110 +83,6 @@ export async function copyBaseWorkspaceTemplate(config: {
   );
 }
 
-export async function copyPackageTemplate(
-  packageTemplateName: string,
-  config: {
-    workspace: Workspace;
-    workspacePackageType: WorkspacePackageType;
-    packageName: string;
-    packagePath: string;
-  },
-) {
-  await copyTemplate(packageTemplateName, config.packagePath);
-
-  await replaceInFileRecursive(
-    TEMPLATE_NAME,
-    config.packagePath,
-    config.workspace.packageJson.name,
-  );
-  await replaceInFileRecursive(
-    TEMPLATE_PACKAGE_NAME,
-    config.packagePath,
-    config.packageName,
-  );
-}
-
-export async function addPackage(config: {
-  workspace: Workspace;
-  workspacePackageType: WorkspacePackageType;
-  packageName: string;
-  type: AppType | PackageType | ToolType;
-}) {
-  const packagePath = path.join(
-    config.workspace.workspaceRoot,
-    workspacePackageTypeToDir[config.workspacePackageType],
-    config.packageName,
-  );
-
-  if (
-    (await fs.exists(packagePath)) &&
-    (await fs.readdir(packagePath)).length > 0
-  ) {
-    throw new CliError({
-      message: `Package ${config.packageName} already exists at ${packagePath}.`,
-    });
-  }
-
-  const updatedConfig = {
-    ...config,
-    packagePath,
-  };
-
-  switch (config.workspacePackageType) {
-    case 'app':
-      switch (config.type) {
-        case 'base':
-          await copyPackageTemplate('app-base', updatedConfig);
-          break;
-        case 'web':
-          // TODO: handle web app
-          break;
-        case 'api':
-          // TODO: handle api app
-          break;
-      }
-      break;
-    case 'package':
-      switch (config.type) {
-        case 'base':
-          await copyPackageTemplate('package-base', updatedConfig);
-          break;
-        case 'auth':
-          // TODO: handle auth package
-          break;
-        case 'db':
-          // TODO: handle db package
-          break;
-        case 'trpc':
-          // TODO: handle trpc package
-          break;
-        case 'intl':
-          // TODO: handle i18n package
-          break;
-        case 'env':
-          // TODO: handle env package
-          break;
-      }
-      break;
-    case 'tool':
-      switch (config.type) {
-        case 'base':
-          await copyPackageTemplate('tool-base', updatedConfig);
-          break;
-        case 'typescript-config':
-          await copyPackageTemplate('tool-typescript-config', updatedConfig);
-          break;
-        case 'eslint-config':
-          await copyPackageTemplate('tool-eslint-config', updatedConfig);
-          break;
-        case 'prettier-config':
-          await copyPackageTemplate('tool-prettier-config', updatedConfig);
-          break;
-      }
-      break;
-  }
-}
-
 export function getPackageNameWithoutWorkspace(
   packageName: string,
   workspaceName: string,
@@ -214,18 +102,12 @@ export async function copyIncludeTemplate(
     TEMPLATE_INCLUDE_BASE_PATH + '/' + includeTemplateName,
     config.currentPackage.packageRoot,
   );
+}
 
-  await replaceInFileRecursive(
-    TEMPLATE_NAME,
-    config.currentPackage.packageRoot,
-    config.workspace.packageJson.name,
-  );
-  await replaceInFileRecursive(
-    TEMPLATE_PACKAGE_NAME,
-    config.currentPackage.packageRoot,
-    getPackageNameWithoutWorkspace(
-      config.packageToInclude.packageJson.name,
-      config.workspace.packageJson.name,
-    ),
-  );
+export async function addEmptyIndexTs(packageRootDir: string, inSrc = true) {
+  const indexPath = path.join(packageRootDir, inSrc ? 'src' : '', 'index.ts');
+  await fs.mkdirp(path.dirname(indexPath));
+  if (!(await fs.exists(indexPath))) {
+    await fs.writeFile(indexPath, '', 'utf8');
+  }
 }

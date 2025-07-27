@@ -7,6 +7,7 @@ import { CliError, UserInputError } from '~/utils/error';
 import { format } from '~/utils/format';
 import { includePackage } from '~/utils/include-package';
 import { getPackageNameWithoutWorkspace } from '~/utils/templates';
+import { getWorkspacePackageInfoType } from '~/utils/workspace';
 
 const packageNameSchema = z
   .string()
@@ -46,14 +47,7 @@ export const includeCommand = packageProcedure
               options: availablePackages.map((pkg) => ({
                 value: pkg.packageJson.name,
                 label: pkg.packageJson.name,
-                hint:
-                  pkg.type +
-                  ' - ' +
-                  (pkg.type == 'app'
-                    ? pkg.appType
-                    : pkg.type == 'package'
-                      ? pkg.packageType
-                      : pkg.toolType),
+                hint: pkg.type + ' - ' + getWorkspacePackageInfoType(pkg),
               })),
             }),
     });

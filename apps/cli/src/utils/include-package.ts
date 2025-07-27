@@ -1,8 +1,27 @@
-import type { PackageJson } from 'type-fest';
+import * as prompts from '@clack/prompts';
 
+import type { AppType, PackageType, ToolType } from './consts';
 import type { Workspace, WorkspacePackageInfo } from './workspace';
-import { savePackageJson } from './package-json';
-import { copyIncludeTemplate } from './templates';
+import { TEMPLATE_NAME, TEMPLATE_PACKAGE_NAME } from './consts';
+import { CliError, UserInputError } from './error';
+import { format } from './format';
+import {
+  addDependency,
+  addDevDependency,
+  addScript,
+  savePackageJson,
+} from './package-json';
+import {
+  copyIncludeTemplate,
+  getPackageNameWithoutWorkspace,
+  replaceInFileRecursive,
+} from './templates';
+import {
+  extendTsConfig,
+  getTsConfigJson,
+  saveTsConfigJson,
+} from './tsconfig-json';
+import { getWorkspacePackageInfoType } from './workspace';
 
 export async function includePackage(
   workspace: Workspace,
@@ -15,6 +34,7 @@ export async function includePackage(
     currentPackage,
     packageToInclude,
   };
+  const currentTsConfigJson = await getTsConfigJson(currentPackage.packageRoot);
 
   switch (packageToInclude.type) {
     case 'app':
@@ -39,7 +59,10 @@ export async function includePackage(
       );
       switch (packageToInclude.toolType) {
         case 'typescript-config':
-          await copyIncludeTemplate('tool-typescript-config', copyConfig);
+          extendTsConfig(
+            currentTsConfigJson,
+            packageToInclude.packageJson.name,
+          );
           addScript(currentPackageJson, 'typecheck');
           addDevDependency(currentPackageJson, 'typescript', 'catalog:');
           break;
@@ -57,45 +80,72 @@ export async function includePackage(
       break;
   }
   await savePackageJson(currentPackage.packageRoot, currentPackageJson);
+  await saveTsConfigJson(currentPackage.packageRoot, currentTsConfigJson);
+
+  await replaceInFileRecursive(
+    TEMPLATE_NAME,
+    currentPackage.packageRoot,
+    workspace.packageJson.name,
+  );
+  await replaceInFileRecursive(
+    TEMPLATE_PACKAGE_NAME,
+    currentPackage.packageRoot,
+    getPackageNameWithoutWorkspace(
+      packageToInclude.packageJson.name,
+      workspace.packageJson.name,
+    ),
+  );
 }
 
-type PackageVersion = 'workspace:*' | 'catalog:';
-
-function addDependency(
-  packageJson: PackageJson,
-  name: string,
-  version: PackageVersion,
+export async function includePackageByTypeInteractive(
+  workspace: Workspace,
+  currentPackage: WorkspacePackageInfo,
+  packageToInclude: AppType | PackageType | ToolType,
 ) {
-  packageJson.dependencies ??= {};
-  packageJson.dependencies[name] = version;
-}
+  if (packageToInclude == 'base') {
+    throw new CliError({
+      message: 'Cannot interactively include base package type.',
+    });
+  }
 
-function addDevDependency(
-  packageJson: PackageJson,
-  name: string,
-  version: PackageVersion,
-) {
-  packageJson.devDependencies ??= {};
-  packageJson.devDependencies[name] = version;
-}
+  if (
+    currentPackage.dependencies.some(
+      (dep) => getWorkspacePackageInfoType(dep) == packageToInclude,
+    )
+  ) {
+    return;
+  }
 
-type PackageJsonScript =
-  | 'format'
-  | 'format:check'
-  | 'lint'
-  | 'lint:fix'
-  | 'typecheck';
-const packageJsonScripts: Record<PackageJsonScript, string> = {
-  format:
-    'prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --write',
-  'format:check':
-    'prettier . --ignore-path ../../.gitignore --ignore-path ../../.prettierignore --check',
-  lint: 'eslint',
-  'lint:fix': 'eslint --fix',
-  typecheck: 'tsc --noEmit',
-};
-
-function addScript(packageJson: PackageJson, script: PackageJsonScript) {
-  packageJson.scripts ??= {};
-  packageJson.scripts[script] = packageJsonScripts[script];
+  const packages = workspace.packages.filter(
+    (pkg) => getWorkspacePackageInfoType(pkg) == packageToInclude,
+  );
+  if (packages.length == 0) {
+    throw new UserInputError({
+      message: `No packages found for type ${packageToInclude}.`,
+      hint: `Use ${format.command('add')} to add a new package of type ${packageToInclude}.`,
+    });
+  } else if (packages.length == 1 && packages[0] != undefined) {
+    await includePackage(workspace, currentPackage, packages[0]);
+  } else {
+    const promptInput = await prompts.group({
+      packageToInclude: () =>
+        prompts.select({
+          message: `Select package to include of type ${packageToInclude}`,
+          options: packages.map((pkg) => ({
+            value: pkg.packageJson.name,
+            label: pkg.packageJson.name,
+          })),
+        }),
+    });
+    const selectedPackage = packages.find(
+      (pkg) => pkg.packageJson.name == promptInput.packageToInclude,
+    );
+    if (!selectedPackage) {
+      throw new UserInputError({
+        message: `Selected package not found.`,
+        hint: `Please select a valid package from the list.`,
+      });
+    }
+    await includePackage(workspace, currentPackage, selectedPackage);
+  }
 }

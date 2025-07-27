@@ -17,6 +17,7 @@
     "noImplicitOverride": true,
     "noFallthroughCasesInSwitch": true,
     "noPropertyAccessFromIndexSignature": false,
+    "checkJs": true,
 
     "module": "ESNext",
     "noEmit": true,

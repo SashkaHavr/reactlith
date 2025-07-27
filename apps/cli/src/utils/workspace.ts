@@ -40,11 +40,7 @@ export async function getWorkspaceFromPathDefined(dir: string) {
 export async function getWorkspaceFromPath(dir: string) {
   const currentDir = path.resolve(dir);
   const packageJson = await getPackageJson(currentDir);
-  if (
-    packageJson &&
-    packageJson.devDependencies &&
-    'turbo' in packageJson.devDependencies
-  ) {
+  if (packageJson.devDependencies && 'turbo' in packageJson.devDependencies) {
     return getWorkspaceInternal(currentDir, packageJson);
   }
   const nextDir = path.resolve(dir, '..');
@@ -64,11 +60,21 @@ async function getWorkspaceInternal(
     throw new CliError({ message: 'Not a Reactlith workspace' });
   }
 
-  return {
+  const workspace: Workspace = {
     packageJson: packageJson as PackageJson & { name: string },
     workspaceRoot: workspaceRoot,
     packages: await getPackages(workspaceRoot),
   };
+
+  for (const pkg of workspace.packages) {
+    pkg.dependencies = workspace.packages.filter(
+      (dep) =>
+        pkg.packageJson.dependencies?.[dep.packageJson.name] != undefined ||
+        pkg.packageJson.devDependencies?.[dep.packageJson.name] != undefined,
+    );
+  }
+
+  return workspace;
 }
 
 async function getPackages(workspaceRoot: string) {
@@ -100,6 +106,7 @@ async function getPackages(workspaceRoot: string) {
 interface BaseWorkspacePackageInfo {
   packageJson: PackageJson & { name: string };
   packageRoot: string;
+  dependencies: WorkspacePackageInfo[];
 }
 
 interface PackageInfo extends BaseWorkspacePackageInfo {
@@ -117,6 +124,17 @@ interface ToolInfo extends BaseWorkspacePackageInfo {
 }
 
 export type WorkspacePackageInfo = PackageInfo | AppInfo | ToolInfo;
+
+export function getWorkspacePackageInfoType(pkg: WorkspacePackageInfo) {
+  switch (pkg.type) {
+    case 'app':
+      return pkg.appType;
+    case 'package':
+      return pkg.packageType;
+    case 'tool':
+      return pkg.toolType;
+  }
+}
 
 export async function getPackage(
   packageRoot: string,
@@ -138,7 +156,6 @@ async function getPackageInternal(
 ): Promise<WorkspacePackageInfo | undefined> {
   const packageJson = await getPackageJson(packagePath);
   if (
-    !packageJson ||
     (packageJson.devDependencies && 'turbo' in packageJson.devDependencies) ||
     packageJson.name == undefined
   ) {
@@ -148,6 +165,7 @@ async function getPackageInternal(
   const baseInfo: BaseWorkspacePackageInfo = {
     packageJson: packageJson as PackageJson & { name: string },
     packageRoot: packagePath,
+    dependencies: [],
   };
 
   switch (packageType) {
