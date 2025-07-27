@@ -1,10 +1,12 @@
 import type { TrpcCliMeta } from 'trpc-cli';
 import { log } from '@clack/prompts';
+import * as prompts from '@clack/prompts';
 import { initTRPC } from '@trpc/server';
 import { ZodError } from 'zod';
 
 import type { Context } from './context';
-import { toolIsMissing } from './utils/cli-tools';
+import { checkGlobalPackages } from './utils/check-global-packages';
+import { pnpmCheck } from './utils/cli-tools';
 import { CliError, UserInputError } from './utils/error';
 import { format } from './utils/format';
 
@@ -40,57 +42,36 @@ const catchErrorsProcedure = t.procedure.use(async ({ next }) => {
 });
 
 export const publicProcedure = catchErrorsProcedure.use(async ({ next }) => {
-  if (await toolIsMissing('git')) {
-    throw new UserInputError({
-      message: 'Git is not found.',
-      hint: 'Please install Git to use Reactlith CLI. See https://git-scm.com/book/en/v2/Getting-Started-Installing-Git',
-    });
-  }
-  if (await toolIsMissing('node')) {
-    throw new UserInputError({
-      message: 'Node.js is not found.',
-      hint: 'Please install Node.js to use Reactlith CLI. See https://nodejs.org/en/download',
-    });
-  }
-  if (await toolIsMissing('pnpm')) {
-    throw new UserInputError({
-      message: 'pnpm is not found.',
-      hint: 'Please install pnpm to use Reactlith CLI. See https://pnpm.io/installation',
-    });
-  }
-  if (await toolIsMissing('turbo')) {
-    throw new UserInputError({
-      message: 'Turbo is not found.',
-      hint: 'Please install Turbo to use Reactlith CLI. See https://turborepo.com/docs/getting-started/installation#global-installation',
-    });
-  }
-  if (await toolIsMissing('bun')) {
-    throw new UserInputError({
-      message: 'Bun is not found.',
-      hint: 'Please install Bun to use Reactlith CLI. See https://bun.sh/docs/installation',
-    });
-  }
-  if (await toolIsMissing('docker')) {
-    throw new UserInputError({
-      message: 'Docker is not found.',
-      hint: 'Please install Docker to use Reactlith CLI. See https://docs.docker.com/get-started/get-docker',
-    });
-  }
+  await prompts.tasks([
+    {
+      title: 'Checking global packages...',
+      task: () => checkGlobalPackages(),
+    },
+  ]);
 
   return await next();
 });
 
-export const workspaceProcedure = publicProcedure.use(({ ctx, next }) => {
-  if (!ctx.workspace) {
+export const workspaceProcedure = publicProcedure.use(async ({ ctx, next }) => {
+  const workspace = ctx.workspace;
+  if (!workspace) {
     throw new UserInputError({
       message: 'Monorepo was not found',
       hint: `Make sure you are in the root of the monorepo or use ${format.command('init')} to create one.`,
     });
   }
+
+  await prompts.tasks([
+    {
+      title: 'Checking workspace...',
+      task: (message) => pnpmCheck(workspace.workspaceRoot, message),
+    },
+  ]);
+
   return next({
     ctx: {
       ...ctx,
-      workspace: ctx.workspace,
+      workspace: workspace,
     },
   });
 });
