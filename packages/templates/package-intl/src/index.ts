@@ -1,5 +1,4 @@
-import type { Locale, NamespaceKeys, NestedKeyOf } from 'use-intl';
-import { createTranslator } from 'use-intl';
+import type { Locale } from 'use-intl';
 import z from 'zod';
 
 import type baseMessages from '../messages/en.json';
@@ -34,23 +33,6 @@ async function getZodLocale(locale: Locale) {
     case 'en':
       return (await import(`zod/v4/locales/en.js`)).default;
   }
-}
-
-const existingTranslators = new Map<Locale, unknown>();
-
-export function getTranslator<
-  Namespace extends NamespaceKeys<
-    BaseMessages,
-    NestedKeyOf<BaseMessages>
-  > = never,
->(params: Parameters<typeof createTranslator<BaseMessages, Namespace>>[0]) {
-  const t = existingTranslators.get(params.locale) as
-    | ReturnType<typeof createTranslator<BaseMessages, Namespace>>
-    | undefined;
-  if (t) return t;
-  const newT = createTranslator<BaseMessages, Namespace>(params);
-  existingTranslators.set(params.locale, newT);
-  return newT;
 }
 
 function getLocale(localeRouteParam: string | undefined): Locale {
