@@ -17,6 +17,7 @@ import { CliError } from './error';
 import { includePackageByTypeInteractive } from './include-package';
 import {
   addDefaultPackageJsonConfig,
+  addDevDependency,
   addExports,
   addImports,
   addScript,
@@ -78,6 +79,7 @@ export async function addPackage(config: {
   switch (config.workspacePackageType) {
     case 'app':
       addTsConfigPath(currentTsConfigJson);
+      addDevDependency(currentPackageJson, '@types/bun', 'catalog:');
       switch (config.type) {
         case 'base':
           break;
@@ -92,6 +94,7 @@ export async function addPackage(config: {
       break;
     case 'package':
       addImports(currentPackageJson);
+      addDevDependency(currentPackageJson, '@types/bun', 'catalog:');
       switch (config.type) {
         case 'base':
           addExports(currentPackageJson, '.', './src/index.ts');
@@ -114,6 +117,7 @@ export async function addPackage(config: {
       }
       break;
     case 'tool':
+      addDevDependency(currentPackageJson, '@types/node', 'catalog:');
       switch (config.type) {
         case 'base':
           addExports(currentPackageJson, '.', './index.ts');

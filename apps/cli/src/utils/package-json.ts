@@ -34,7 +34,6 @@ export function addDefaultPackageJsonConfig(
   packageJson.private = true;
   packageJson.type = 'module';
   addScript(packageJson, 'clean');
-  addDevDependency(packageJson, '@types/bun', 'catalog:');
 }
 
 type PackageVersion = 'workspace:*' | 'catalog:';
