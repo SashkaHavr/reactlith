@@ -75,7 +75,7 @@ export async function copyBaseWorkspaceTemplate(config: {
   workspacePath: string;
   workspaceName: string;
 }) {
-  await copyTemplate('base', config.workspacePath);
+  await copyTemplate('workspace-base', config.workspacePath);
 
   await replaceInFileRecursive(
     TEMPLATE_NAME,
