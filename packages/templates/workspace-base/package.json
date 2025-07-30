@@ -6,6 +6,7 @@
     "check": "turbo format:check lint typecheck",
     "clean": "turbo clean clean:root",
     "clean:root": "git clean -xdf .turbo node_modules",
+    "compose": "docker compose -f docker-compose.yaml -f docker-compose.dev.yaml up --build -d",
     "deps": "pnpm outdated -r",
     "deps-w": "pnpm update -r",
     "deps-w-major": "pnpm update -r --latest",

@@ -1,0 +1,15 @@
+{
+  "i18n-ally.enabledFrameworks": ["next-intl"],
+  "i18n-ally.localesPaths": ["packages/intl/messages"],
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.sortKeys": true,
+  "files.exclude": {
+    "**/.turbo": true,
+    "**/node_modules": true,
+    "**/.tanstack": true
+  },
+  "search.exclude": {
+    "pnpm-lock.yaml": true,
+    "**/routeTree.gen.ts": true
+  }
+}

@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mysecretpassword}
+    networks:
+      db-network:
+        aliases:
+          - db-internal
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-t", "10"]
+      interval: 10s
+      timeout: 10s
+      start_interval: 1s
+      start_period: 1s
+  pgadmin:
+    image: dpage/pgadmin4
+    env_file:
+      - path: .env
+        required: false
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - db-network
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:mysecretpassword@db-internal:5432/postgres}
+    env_file:
+      - path: .env
+        required: false
+    networks:
+      - db-network
+    depends_on:
+      db:
+        condition: service_healthy
+
+networks:
+  db-network:
+
+volumes:
+  db-data:

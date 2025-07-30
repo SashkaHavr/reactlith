@@ -46,4 +46,4 @@ HEALTHCHECK --interval=10s --timeout=10s CMD [ "curl", "http://localhost:3000/tr
 USER bun
 EXPOSE 3000
 ENV NODE_ENV=production
-CMD [ "sh", "-c", "cd /db/packages/db && bun push && cd /app && bun run server/index.mjs" ]
+CMD [ "sh", "-c", "cd /db/packages/db && bun db:push && cd /app && bun run server/index.mjs" ]

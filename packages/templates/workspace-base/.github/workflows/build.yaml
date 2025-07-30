@@ -1,0 +1,61 @@
+name: Build and push images to registry
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-check:
+    uses: ./.github/workflows/check-reusable.yaml
+    secrets: inherit
+  build-and-push:
+    runs-on: ubuntu-latest
+    needs: run-check
+    if: ${{ success() && vars.REGISTRY != '' && vars.REGISTRY_USERNAME != '' }}
+
+    strategy:
+      matrix:
+        image:
+          - name: web
+            dockerfile: './apps/web/Dockerfile'
+
+    steps:
+      - name: Login to Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ vars.REGISTRY }}
+          username: ${{ vars.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push image ${{ matrix.image.name }}
+        uses: docker/build-push-action@v6
+        with:
+          file: ${{ matrix.image.dockerfile }}
+          push: true
+          tags: |
+            ${{ vars.REGISTRY }}/reactlith-template/${{ matrix.image.name }}:latest
+            ${{ vars.REGISTRY }}/reactlith-template/${{ matrix.image.name }}:${{ github.sha }}
+          build-args: ${{ matrix.image.build-args }}
+          secrets: |
+            TURBO_TEAM=${{ vars.TURBO_TEAM }}
+            TURBO_TOKEN=${{ secrets.TURBO_TOKEN }}
+          cache-from: type=registry,ref=${{ vars.REGISTRY }}/reactlith-template/${{ matrix.image.name }}:latest
+          cache-to: type=inline
+
+  trigger-dokploy-deployment:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: ${{ success() && vars.DOKPLOY_URL != '' && vars.DOKPLOY_APP_ID != '' }}
+
+    steps:
+      - name: Trigger dokploy deployment
+        run: |
+          curl -X 'POST' \
+          '${{ vars.DOKPLOY_URL }}/api/application.deploy' \
+          -H 'accept: application/json' \
+          -H "Content-Type: application/json" \
+          -H 'x-api-key: ${{ secrets.DOKPLOY_API_KEY }}' \
+          -d '{"applicationId": "${{ vars.DOKPLOY_APP_ID }}"}'

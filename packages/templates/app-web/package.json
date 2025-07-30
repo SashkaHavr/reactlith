@@ -3,7 +3,7 @@
     "add-component": "pnpm dlx shadcn@latest add",
     "build": "vite build",
     "dev": "vite",
-    "start": "bun run .output/server/index.mjs"
+    "start": "bun exec \"NODE_ENV=production bun run .output/server/index.mjs\""
   },
   "dependencies": {
     "@radix-ui/react-select": "^2.2.5",

@@ -4,8 +4,9 @@
     "./schema": "./src/schema/index.ts"
   },
   "scripts": {
-    "push": "drizzle-kit push",
-    "studio": "drizzle-kit studio"
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:up": "bun exec \"docker run -d --name pg-reactlith-template -e POSTGRES_PASSWORD=mysecretpassword -v pgdata-reactlith-template:/var/lib/postgresql/data -p 5432:5432 postgres && echo 'DATABASE_URL=postgresql://postgres:mysecretpassword@localhost:5432/postgres' > ./.env && pnpm db:push\""
   },
   "dependencies": {
     "drizzle-kit": "catalog:drizzle",
