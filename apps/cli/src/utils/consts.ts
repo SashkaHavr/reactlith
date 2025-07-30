@@ -39,4 +39,5 @@ export type ToolType = (typeof toolTypes)[number];
 export const TEMPLATE_MODULE = '@reactlith/templates';
 export const TEMPLATE_NAME = 'reactlith-template';
 export const TEMPLATE_PACKAGE_NAME = 'reactlith-package';
+export const TEMPLATE_PRETTY_NAME = 'Reactlith template';
 export const TEMPLATE_INCLUDE_BASE_PATH = 'include';

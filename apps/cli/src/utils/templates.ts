@@ -7,6 +7,7 @@ import {
   TEMPLATE_INCLUDE_BASE_PATH,
   TEMPLATE_MODULE,
   TEMPLATE_NAME,
+  TEMPLATE_PRETTY_NAME,
 } from './consts';
 import { CliError } from './error';
 
@@ -81,6 +82,12 @@ export async function copyBaseWorkspaceTemplate(config: {
     config.workspacePath,
     config.workspaceName,
   );
+
+  await replaceInFileRecursive(
+    TEMPLATE_PRETTY_NAME,
+    config.workspacePath,
+    getWorkspaceNamePrettified(config.workspaceName),
+  );
 }
 
 export function getPackageNameWithoutWorkspace(
@@ -88,6 +95,10 @@ export function getPackageNameWithoutWorkspace(
   workspaceName: string,
 ): string {
   return packageName.replace(new RegExp(`@${workspaceName}/`, 'g'), '');
+}
+
+export function getWorkspaceNamePrettified(workspaceName: string): string {
+  return workspaceName.replace(/-/g, ' ').replace(/^./, (c) => c.toUpperCase());
 }
 
 export async function copyIncludeTemplate(

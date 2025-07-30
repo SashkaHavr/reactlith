@@ -11,6 +11,7 @@ import type { Workspace } from './workspace';
 import {
   TEMPLATE_NAME,
   TEMPLATE_PACKAGE_NAME,
+  TEMPLATE_PRETTY_NAME,
   workspacePackageTypeToDir,
 } from './consts';
 import { CliError } from './error';
@@ -28,6 +29,7 @@ import {
 import {
   addEmptyIndexTs,
   copyTemplate,
+  getWorkspaceNamePrettified,
   replaceInFileRecursive,
 } from './templates';
 import {
@@ -158,6 +160,12 @@ export async function addPackage(config: {
     TEMPLATE_NAME,
     packagePath,
     config.workspace.packageJson.name,
+  );
+
+  await replaceInFileRecursive(
+    TEMPLATE_PRETTY_NAME,
+    packagePath,
+    getWorkspaceNamePrettified(config.workspace.packageJson.name),
   );
 
   if (await fs.exists(path.join(packagePath, 'prettier.config.js'))) {
