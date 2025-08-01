@@ -26,10 +26,16 @@ const nameSchema = z
   .nonempty()
   .meta({ title: 'name', description: 'name of the monorepo' });
 
-const inputSchema = z.tuple([nameSchema.optional()]);
+const variantSchema = z.enum(['base', 'full']).meta({
+  title: 'variant',
+  description: 'variant of the monorepo',
+});
+
+const inputSchema = z.tuple([nameSchema.optional(), variantSchema.optional()]);
 
 const promptSchema = z.object({
   name: nameSchema,
+  variant: variantSchema,
 });
 
 export const createCommand = publicProcedure
@@ -50,6 +56,14 @@ export const createCommand = publicProcedure
           : prompts.text({
               message: 'name of the monorepo',
             }),
+      variant: () =>
+        prompts.select({
+          message: 'variant of the monorepo',
+          options: [
+            { value: 'base', label: 'Base' },
+            { value: 'full', label: 'Full' },
+          ],
+        }),
     });
     const parsedInput = promptSchema.parse(promptInput);
 
@@ -114,6 +128,48 @@ export const createCommand = publicProcedure
             packageName: 'eslint-config',
             type: 'eslint-config',
           }),
+      },
+      {
+        title: 'Copying full workspace template...',
+        task: async () => {
+          await addPackage({
+            workspace: await getWorkspaceFromPathDefined(workspacePath),
+            workspacePackageType: 'package',
+            packageName: 'env',
+            type: 'env',
+          });
+          await addPackage({
+            workspace: await getWorkspaceFromPathDefined(workspacePath),
+            workspacePackageType: 'package',
+            packageName: 'db',
+            type: 'db',
+          });
+          await addPackage({
+            workspace: await getWorkspaceFromPathDefined(workspacePath),
+            workspacePackageType: 'package',
+            packageName: 'intl',
+            type: 'intl',
+          });
+          await addPackage({
+            workspace: await getWorkspaceFromPathDefined(workspacePath),
+            workspacePackageType: 'package',
+            packageName: 'auth',
+            type: 'auth',
+          });
+          await addPackage({
+            workspace: await getWorkspaceFromPathDefined(workspacePath),
+            workspacePackageType: 'package',
+            packageName: 'trpc',
+            type: 'trpc',
+          });
+          await addPackage({
+            workspace: await getWorkspaceFromPathDefined(workspacePath),
+            workspacePackageType: 'app',
+            packageName: 'web',
+            type: 'web',
+          });
+        },
+        enabled: parsedInput.variant == 'full',
       },
       {
         title: 'Initializing git repository...',

@@ -8,7 +8,7 @@ export const infoCommand = workspaceProcedure
     console.log(`Workspace name: ${workspace.packageJson.name}`);
     console.log(`Workspace root: ${workspace.workspaceRoot}`);
     console.log('Packages:');
-    if (workspace.packages.length === 0) {
+    if (workspace.packages.length == 0) {
       console.log('No packages found in the workspace.');
       return;
     }
