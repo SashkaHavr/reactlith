@@ -1,13 +1,13 @@
-import { createRequire } from 'module';
 import path from 'path';
 import fs from 'fs-extra';
 
 import type { Workspace, WorkspacePackageInfo } from './workspace';
 import {
+  CLI_ROOT,
   TEMPLATE_INCLUDE_BASE_PATH,
-  TEMPLATE_MODULE,
   TEMPLATE_NAME,
   TEMPLATE_PRETTY_NAME,
+  TEMPLATES_FOLDER,
 } from './consts';
 import { CliError } from './error';
 
@@ -45,18 +45,13 @@ export async function replaceInFileRecursive(
 }
 
 async function getTemplateModulePath() {
-  const require = createRequire(import.meta.url);
-  const resolvedPath = require.resolve.paths(TEMPLATE_MODULE);
-  if (resolvedPath) {
-    const lookupPaths = resolvedPath.map((p) => path.join(p, TEMPLATE_MODULE));
-    for (const lookupPath of lookupPaths) {
-      if (await fs.exists(lookupPath)) {
-        return lookupPath;
-      }
-    }
+  const resolvedPath = path.join(CLI_ROOT, TEMPLATES_FOLDER);
+
+  if (await fs.exists(resolvedPath)) {
+    return resolvedPath;
   }
   throw new CliError({
-    message: `Template module ${TEMPLATE_MODULE} not found.`,
+    message: `Templates folder not found.`,
   });
 }
 

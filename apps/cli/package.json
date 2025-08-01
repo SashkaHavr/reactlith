@@ -30,7 +30,8 @@
   },
   "files": [
     "dist",
-    "package.json"
+    "package.json",
+    "templates"
   ],
   "scripts": {
     "build": "tsup",
