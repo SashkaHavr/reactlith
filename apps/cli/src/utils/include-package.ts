@@ -128,6 +128,14 @@ export async function includePackageByTypeInteractive(
     (pkg) => getWorkspacePackageInfoType(pkg) == packageToInclude,
   );
   if (packages.length == 0) {
+    const continueWithout = await prompts.confirm({
+      message: `No packages found for type ${packageToInclude}. Do you want to continue without including any?`,
+      initialValue: false,
+    });
+    if (continueWithout == true) {
+      return;
+    }
+
     throw new UserInputError({
       message: `No packages found for type ${packageToInclude}.`,
       hint: `Use ${format.command('add')} to add a new package of type ${packageToInclude}.`,
