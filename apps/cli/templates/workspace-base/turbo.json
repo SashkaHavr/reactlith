@@ -19,6 +19,12 @@
     "format:check": {
       "outputLogs": "errors-only"
     },
+    "//#format:root": {
+      "cache": false
+    },
+    "//#format:root:check": {
+      "outputLogs": "errors-only"
+    },
     "lint": {
       "dependsOn": ["^build"],
       "outputLogs": "errors-only"

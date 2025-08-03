@@ -1,0 +1,21 @@
+{
+  "name": "Reactlith template Dev Container",
+  "dockerComposeFile": "docker-compose.yaml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  // vite dev/bun start, drizzle studio
+  "forwardPorts": [3000, 4983],
+  "postCreateCommand": "pnpm install && cd ./packages/db && pnpm db:push",
+  "remoteUser": "root",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "lokalise.i18n-ally",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-containers",
+        "bradlc.vscode-tailwindcss"
+      ]
+    }
+  }
+}

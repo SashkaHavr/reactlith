@@ -4,6 +4,7 @@ import { createCli } from 'trpc-cli';
 
 import { addCommand } from './commands/add';
 import { createCommand } from './commands/create';
+import { fixCommand } from './commands/fix';
 import { includeCommand } from './commands/include';
 import { infoCommand } from './commands/info';
 import { createContext } from './context';
@@ -14,6 +15,7 @@ export const cliRouter = router({
   add: addCommand,
   include: includeCommand,
   info: infoCommand,
+  fix: fixCommand,
 });
 
 const cli = createCli({

@@ -35,7 +35,7 @@ export async function replaceInFileRecursive(
   await Promise.all(
     entries.map(async (entry) => {
       const fullPath = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
+      if (entry.isDirectory() && entry.name != 'node_modules') {
         await replaceInFileRecursive(stringToReplace, fullPath, workspaceName);
       } else if (entry.isFile()) {
         await replaceInFile(stringToReplace, fullPath, workspaceName);

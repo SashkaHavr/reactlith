@@ -45,6 +45,7 @@ export async function addPackage(config: {
   workspacePackageType: WorkspacePackageType;
   packageName: string;
   type: AppType | PackageType | ToolType;
+  allowOverwrite?: boolean;
 }) {
   const packagePath = path.join(
     config.workspace.workspaceRoot,
@@ -53,6 +54,7 @@ export async function addPackage(config: {
   );
 
   if (
+    !config.allowOverwrite &&
     (await fs.exists(packagePath)) &&
     (await fs.readdir(packagePath)).length > 0
   ) {
@@ -76,7 +78,10 @@ export async function addPackage(config: {
   }
 
   const currentPackageJson = await getPackageJson(packagePath);
-  const currentTsConfigJson = await getTsConfigJson(packagePath);
+  const currentTsConfigJson =
+    config.type != 'typescript-config'
+      ? await getTsConfigJson(packagePath)
+      : {};
 
   switch (config.workspacePackageType) {
     case 'app':

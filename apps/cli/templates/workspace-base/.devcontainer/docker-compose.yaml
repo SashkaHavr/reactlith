@@ -1,0 +1,41 @@
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - db-network
+    env_file:
+      - path: .env
+        required: false
+    command: sleep infinity
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:mysecretpassword@db-internal:5432/postgres}
+      AUTH_DEV_MAGIC_LINK: true
+      BETTER_AUTH_URL: http://localhost:3000
+      BETTER_AUTH_SECRET: supersecretkey
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mysecretpassword}
+    networks:
+      db-network:
+        aliases:
+          - db-internal
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres', '-t', '10']
+      interval: 10s
+      timeout: 10s
+      start_interval: 1s
+      start_period: 1s
+
+networks:
+  db-network:
+
+volumes:
+  db-data:

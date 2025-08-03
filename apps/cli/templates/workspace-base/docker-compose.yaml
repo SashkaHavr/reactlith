@@ -10,7 +10,7 @@ services:
         aliases:
           - db-internal
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "postgres", "-t", "10"]
+      test: ['CMD', 'pg_isready', '-U', 'postgres', '-t', '10']
       interval: 10s
       timeout: 10s
       start_interval: 1s
