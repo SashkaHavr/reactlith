@@ -6,4 +6,4 @@ ENV TURBO_TELEMETRY_DISABLED=1
 RUN npm install -g bun
 RUN npm install -g pnpm
 RUN npm install -g turbo
-
+RUN npm install -g reactlith
