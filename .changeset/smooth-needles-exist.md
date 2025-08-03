@@ -1,5 +1,0 @@
----
-"reactlith": patch
----
-
-Initial release
