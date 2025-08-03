@@ -23,6 +23,7 @@
   },
   "prettier": "@reactlith/prettier-config",
   "devDependencies": {
+    "@changesets/cli": "^2.29.5",
     "@reactlith/prettier-config": "workspace:*",
     "turbo": "^2.5.5"
   },
