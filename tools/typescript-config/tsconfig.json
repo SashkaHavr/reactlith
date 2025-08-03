@@ -1,5 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
+  "exclude": ["node_modules", "dist", ".nitro", ".output"],
   "compilerOptions": {
     // Base Options:
     "esModuleInterop": true,

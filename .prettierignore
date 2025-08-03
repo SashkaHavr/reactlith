@@ -1,3 +1,7 @@
 **/*.gen.ts
+**/*.handlebars
 **/assets
+**/android
+**/ios
+**/pnpm-lock.yaml
 **/templates

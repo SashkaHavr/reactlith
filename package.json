@@ -6,14 +6,15 @@
     "check": "turbo format:check lint typecheck",
     "clean": "turbo clean clean:root",
     "clean:root": "git clean -xdf .turbo node_modules",
-    "deps": "pnpx taze -r",
-    "deps-major": "pnpx taze major -r",
-    "deps-major-w": "pnpx taze major -r -w --install=false",
-    "deps-w": "pnpx taze -r -w --install=false",
+    "deps": "pnpm outdated -r",
+    "deps-w": "pnpm update -r",
+    "deps-w-major": "pnpm update -r --latest",
     "dev": "turbo dev",
     "fix": "turbo format lint:fix typecheck",
-    "format": "turbo format",
-    "format:check": "turbo format:check",
+    "format": "turbo format format:root",
+    "format:check": "turbo format:check format:root:check",
+    "format:root": "prettier **/*.yaml **/*.json --write",
+    "format:root:check": "prettier **/*.yaml **/*.json --check",
     "lint": "turbo lint",
     "lint:fix": "turbo lint:fix",
     "start": "turbo start",
@@ -23,7 +24,7 @@
   "prettier": "@reactlith/prettier-config",
   "devDependencies": {
     "@reactlith/prettier-config": "workspace:*",
-    "turbo": "^2.5.4"
+    "turbo": "^2.5.5"
   },
-  "packageManager": "pnpm@10.12.4"
+  "packageManager": "pnpm@10.13.1"
 }

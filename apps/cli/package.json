@@ -47,7 +47,6 @@
   "prettier": "@reactlith/prettier-config",
   "dependencies": {
     "@clack/prompts": "^0.11.0",
-    "@reactlith/templates": "workspace:*",
     "@trpc/server": "catalog:trpc",
     "execa": "^9.6.0",
     "fs-extra": "^11.3.0",
