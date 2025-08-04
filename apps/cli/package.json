@@ -31,7 +31,8 @@
   "files": [
     "dist",
     "package.json",
-    "templates"
+    "templates",
+    "README.md"
   ],
   "scripts": {
     "build": "tsup",
