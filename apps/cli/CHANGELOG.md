@@ -1,5 +1,11 @@
 # reactlith
 
+## 1.0.5
+
+### Patch Changes
+
+- 8fd9c63: Change root format commad
+
 ## 1.0.4
 
 ### Patch Changes
