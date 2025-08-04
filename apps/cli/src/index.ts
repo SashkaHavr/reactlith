@@ -9,6 +9,7 @@ import { includeCommand } from './commands/include';
 import { infoCommand } from './commands/info';
 import { createContext } from './context';
 import { router } from './init';
+import { getCliPackageJson } from './utils/package-json';
 
 export const cliRouter = router({
   create: createCommand,
@@ -22,7 +23,7 @@ const cli = createCli({
   router: cliRouter,
   name: 'Reactlith CLI',
   description: 'Create a full-stack, typesafe, rock-solid React monorepo',
-  version: '0.0.1',
+  version: (await getCliPackageJson()).version,
   context: await createContext(),
 });
 await cli.run({
