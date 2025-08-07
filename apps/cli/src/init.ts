@@ -5,7 +5,7 @@ import { initTRPC } from '@trpc/server';
 import { ZodError } from 'zod';
 
 import type { Context } from './context';
-// import { checkGlobalPackages } from './utils/check-global-packages';
+import { checkGlobalPackages } from './utils/check-global-packages';
 import { pnpmCheck } from './utils/cli-tools';
 import { CliError, UserInputError } from './utils/error';
 import { format } from './utils/format';
@@ -42,12 +42,12 @@ const catchErrorsProcedure = t.procedure.use(async ({ next }) => {
 });
 
 export const publicProcedure = catchErrorsProcedure.use(async ({ next }) => {
-  // await prompts.tasks([
-  //   {
-  //     title: 'Checking global packages...',
-  //     task: () => checkGlobalPackages(),
-  //   },
-  // ]);
+  await prompts.tasks([
+    {
+      title: 'Checking global packages...',
+      task: () => checkGlobalPackages(),
+    },
+  ]);
 
   return await next();
 });

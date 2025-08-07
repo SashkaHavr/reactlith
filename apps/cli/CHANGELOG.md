@@ -1,5 +1,11 @@
 # reactlith
 
+## 1.0.7
+
+### Patch Changes
+
+- Make check optional
+
 ## 1.0.6
 
 ### Patch Changes

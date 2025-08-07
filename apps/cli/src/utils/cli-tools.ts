@@ -1,4 +1,5 @@
 import type { ResultPromise } from 'execa';
+import * as prompts from '@clack/prompts';
 import { execa } from 'execa';
 import which from 'which';
 
@@ -57,5 +58,11 @@ export async function pnpmCheck(
   workspaceRoot: string,
   message?: (str: string) => void,
 ) {
-  await streamCommand(execa({ cwd: workspaceRoot })`pnpm check`, message);
+  try {
+    await streamCommand(execa({ cwd: workspaceRoot })`pnpm check`, message);
+  } catch {
+    prompts.log.warning(
+      'Workspace check failed. Please ensure your workspace is set up correctly.',
+    );
+  }
 }
