@@ -9,7 +9,7 @@ RUN bun install -g turbo
 FROM base AS turbo
 WORKDIR /app
 COPY . .
-RUN turbo prune @reactlith-template/web --docker
+RUN turbo prune @reactlith-template/reactlith-package --docker
 
 # Install and build
 FROM base AS builder
@@ -37,7 +37,7 @@ COPY --from=turbo-db /app/out/full/ .
 
 # Run
 FROM oven/bun:slim AS runner
-COPY --from=builder /app/apps/web/.output /app
+COPY --from=builder /app/apps/reactlith-package/.output /app
 COPY --from=builder-db /app /db
 
 RUN apt-get -y update && apt-get -y install curl
