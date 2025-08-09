@@ -3,6 +3,7 @@ import { MoonIcon, SunIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
 import type { buttonVariants } from './ui/button';
+import { useIsClient } from '~/hooks/use-is-client';
 import { Button } from './ui/button';
 
 export function ThemeToggle(
@@ -12,6 +13,7 @@ export function ThemeToggle(
     },
 ) {
   const { resolvedTheme, setTheme } = useTheme();
+  const isClient = useIsClient();
 
   return (
     <Button
@@ -20,7 +22,13 @@ export function ThemeToggle(
       onClick={() => setTheme(resolvedTheme == 'light' ? 'dark' : 'light')}
       {...props}
     >
-      {resolvedTheme == 'light' ? <SunIcon /> : <MoonIcon />}
+      {!isClient ? (
+        <div />
+      ) : resolvedTheme == 'light' ? (
+        <SunIcon />
+      ) : (
+        <MoonIcon />
+      )}
     </Button>
   );
 }

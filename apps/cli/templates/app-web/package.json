@@ -11,7 +11,7 @@
     "@tailwindcss/vite": "catalog:tailwind",
     "@tanstack/react-query": "catalog:trpc",
     "@tanstack/react-router": "catalog:vite",
-    "@tanstack/react-router-with-query": "catalog:vite",
+    "@tanstack/react-router-ssr-query": "catalog:vite",
     "@tanstack/react-start": "catalog:vite",
     "@tanstack/router-plugin": "catalog:vite",
     "@trpc/client": "catalog:trpc",

@@ -1,5 +1,5 @@
 import { createRouter as createTanStackRouter } from '@tanstack/react-router';
-import { routerWithQueryClient } from '@tanstack/react-router-with-query';
+import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
 
 import { ErrorComponent } from './components/error-component';
 import { NotFoundComponent } from './components/not-found-component';
@@ -13,6 +13,7 @@ export function createRouter() {
   const router = createTanStackRouter({
     context: { ...trpcRouteContext },
     routeTree,
+    scrollRestoration: true,
     defaultPreloadStaleTime: 0,
     defaultPreload: 'intent',
     defaultPendingComponent: PendingComponent,
@@ -30,7 +31,12 @@ export function createRouter() {
     },
   });
 
-  return routerWithQueryClient(router, trpcRouteContext.queryClient);
+  setupRouterSsrQueryIntegration({
+    router: router,
+    queryClient: trpcRouteContext.queryClient,
+  });
+
+  return router;
 }
 
 declare module '@tanstack/react-router' {

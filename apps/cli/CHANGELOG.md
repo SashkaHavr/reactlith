@@ -1,5 +1,11 @@
 # reactlith
 
+## 1.0.8
+
+### Patch Changes
+
+- Update template with query integration and drizzle-studio
+
 ## 1.0.7
 
 ### Patch Changes

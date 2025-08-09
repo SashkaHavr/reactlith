@@ -16,9 +16,9 @@ export function useLoggedInAuth() {
   return auth;
 }
 
-export function useOptionalTranslations() {
+export function useLocaleFromRoute() {
   const matches = useRouterState({ select: (s) => s.matches }).filter((m) =>
-    isMatch(m, 'context.intl.messages'),
+    isMatch(m, 'context.intl.locale'),
   );
-  return matches[0]?.context.intl.messages;
+  return matches[0]?.context.intl.locale;
 }
