@@ -1,6 +1,6 @@
 {
   "name": "reactlith",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Create a full-stack, typesafe, rock-solid React monorepo",
   "keywords": [
     "init.tips",

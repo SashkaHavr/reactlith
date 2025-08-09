@@ -1,5 +1,11 @@
 # reactlith
 
+## 1.0.10
+
+### Patch Changes
+
+- 8dbbe27: Fix path in dockerfile
+
 ## 1.0.9
 
 ### Patch Changes
