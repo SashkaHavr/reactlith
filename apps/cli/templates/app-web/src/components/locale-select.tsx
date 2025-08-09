@@ -3,7 +3,7 @@ import { useNavigate } from '@tanstack/react-router';
 
 import { isLocale, locales } from '@reactlith-template/intl';
 
-import { useLocaleFromRoute } from '~/lib/route-context-hooks';
+import { useLocaleFromRoute } from '~/hooks/route-context';
 import {
   Select,
   SelectContent,

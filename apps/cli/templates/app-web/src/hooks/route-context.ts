@@ -16,6 +16,13 @@ export function useLoggedInAuth() {
   return auth;
 }
 
+export function useTranslationsFromRoute() {
+  const matches = useRouterState({ select: (s) => s.matches }).filter((m) =>
+    isMatch(m, 'context.intl.messages'),
+  );
+  return matches[0]?.context.intl.messages;
+}
+
 export function useLocaleFromRoute() {
   const matches = useRouterState({ select: (s) => s.matches }).filter((m) =>
     isMatch(m, 'context.intl.locale'),

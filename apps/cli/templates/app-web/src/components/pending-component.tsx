@@ -1,13 +1,12 @@
-import { useTranslations } from 'use-intl';
-
+import { useTranslationsFromRoute } from '~/hooks/route-context';
 import { LoadingSpinner } from './ui/loading-spinner';
 
 export function PendingComponent() {
-  const t = useTranslations();
+  const t = useTranslationsFromRoute();
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-1 pb-20">
       <LoadingSpinner />
-      {<p className="text-lg">{t('defaultComponents.loading')}</p>}
+      {t && <p className="text-lg">{t.defaultComponents.loading}</p>}
     </div>
   );
 }
