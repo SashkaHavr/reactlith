@@ -15,7 +15,6 @@ import {
 
 const localeToText: Record<Locale, string> = {
   en: 'English',
-  uk: 'Українська',
 };
 
 export function LocaleSelect({ className }: { className?: string }) {
