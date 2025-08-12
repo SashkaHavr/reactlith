@@ -1,5 +1,11 @@
 # reactlith
 
+## 1.0.11
+
+### Patch Changes
+
+- Fix locale redirect in web template
+
 ## 1.0.10
 
 ### Patch Changes

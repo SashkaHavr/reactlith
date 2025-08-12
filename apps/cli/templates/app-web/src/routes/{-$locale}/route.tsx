@@ -10,11 +10,12 @@ import { IntlProvider } from '~/lib/intl';
 import { getAcceptLanguageHeaderServerFn } from '~/lib/intl-server';
 
 export const Route = createFileRoute('/{-$locale}')({
-  beforeLoad: async ({ params }) => {
+  beforeLoad: async ({ params, matches }) => {
     if (params.locale && !isLocale(params.locale)) {
       throw redirect({ to: '/{-$locale}', params: { locale: undefined } });
     }
 
+    const currentMatch = matches[matches.length - 1]?.pathname;
     if (params.locale == undefined) {
       const acceptLanguageHeader = await getAcceptLanguageHeaderServerFn();
       if (Array.isArray(acceptLanguageHeader)) {
@@ -23,7 +24,7 @@ export const Route = createFileRoute('/{-$locale}')({
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (firstPreferredLocale && firstPreferredLocale != defaultLocale) {
           throw redirect({
-            to: '/{-$locale}',
+            to: currentMatch ? '/{-$locale}' + currentMatch : '/{-$locale}',
             params: { locale: firstPreferredLocale },
           });
         }
