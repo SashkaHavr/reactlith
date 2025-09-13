@@ -8,7 +8,8 @@ type BaseMessages = typeof baseMessages;
 export const locales = ['en'] as const;
 export function isLocale(locale: unknown): locale is Locale {
   return (
-    typeof locale == 'string' && (locales as readonly string[]).includes(locale)
+    typeof locale === 'string' &&
+    (locales as readonly string[]).includes(locale)
   );
 }
 

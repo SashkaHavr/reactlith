@@ -42,7 +42,7 @@ export const authGetSessionOptions = queryOptions({
 export async function getAuthContext(queryClient: QueryClient) {
   try {
     const session = await queryClient.ensureQueryData(authGetSessionOptions);
-    return session != null
+    return session !== null
       ? {
           available: true as const,
           loggedIn: true as const,
@@ -66,6 +66,8 @@ export function useResetAuth() {
   const router = useRouter();
 
   return async () => {
+    await authClient.getSession({ query: { disableCookieCache: true } });
+
     await queryClient.resetQueries({ queryKey: [authBaseKey] });
     await router.invalidate();
   };
@@ -90,7 +92,7 @@ export function hasAnyRoleExceptUser(
   user: typeof authClient.$Infer.Session.user,
 ) {
   const roles = getRoles(user.role);
-  return roles && roles.filter((r) => r != 'user').length > 0;
+  return roles && roles.filter((r) => r !== 'user').length > 0;
 }
 
 export function useSignout() {

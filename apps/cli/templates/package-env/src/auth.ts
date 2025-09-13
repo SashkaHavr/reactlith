@@ -6,7 +6,7 @@ export const authConfig = {
 };
 
 export const authProdConfig =
-  process.env.NODE_ENV == 'production'
+  process.env.NODE_ENV === 'production'
     ? {
         BETTER_AUTH_URL: z.url(),
         BETTER_AUTH_SECRET: z.string().nonempty(),

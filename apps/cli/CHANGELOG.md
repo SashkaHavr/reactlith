@@ -1,5 +1,11 @@
 # reactlith
 
+## 1.0.12
+
+### Patch Changes
+
+- Update template
+
 ## 1.0.11
 
 ### Patch Changes

@@ -16,6 +16,7 @@ export default tseslint.config(
     rules: {
       curly: ['error', 'multi-line'],
       'no-empty': ['error', { allowEmptyCatch: true }],
+      eqeqeq: ['error', 'always'],
     },
   },
   {

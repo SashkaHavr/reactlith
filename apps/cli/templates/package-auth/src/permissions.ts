@@ -34,5 +34,5 @@ export function getRoles(roleArray: string | null | undefined) {
 export function isRoleArray(
   roleArray: string | null | undefined,
 ): roleArray is string {
-  return getRoles(roleArray) != undefined;
+  return getRoles(roleArray) !== undefined;
 }

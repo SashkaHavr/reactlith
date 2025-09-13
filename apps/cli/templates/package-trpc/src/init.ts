@@ -25,7 +25,7 @@ const t = initTRPC.context<Context>().create({
 export const router = t.router;
 
 export const publicProcedure =
-  envServer.NODE_ENV == 'production'
+  envServer.NODE_ENV === 'production'
     ? t.procedure
     : t.procedure.use(async ({ next }) => {
         const result = await next();

@@ -19,12 +19,12 @@ export function ThemeToggle(
     <Button
       variant="outline"
       size="icon"
-      onClick={() => setTheme(resolvedTheme == 'light' ? 'dark' : 'light')}
+      onClick={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}
       {...props}
     >
       {!isClient ? (
         <div />
-      ) : resolvedTheme == 'light' ? (
+      ) : resolvedTheme === 'light' ? (
         <SunIcon />
       ) : (
         <MoonIcon />

@@ -4,7 +4,7 @@
     "./permissions": "./src/permissions.ts"
   },
   "scripts": {
-    "generate-db-schema": "bun exec \"DATABASE_URL=url npx @better-auth/cli@latest generate --config src/index.ts\""
+    "generate-db-schema": "bun exec \"DATABASE_URL=url pnpm dlx @better-auth/cli@latest generate --config src/index.ts\""
   },
   "dependencies": {
     "better-auth": "catalog:"
