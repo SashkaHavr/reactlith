@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "add-component": "pnpm dlx shadcn@latest add",
-    "postadd-component": "pnpm run format",
+    "component": "pnpm dlx shadcn@latest add",
+    "postcomponent": "pnpm run format",
     "build": "vite build",
     "dev": "vite",
     "start": "bun exec \"NODE_ENV=production bun run .output/server/index.mjs\""

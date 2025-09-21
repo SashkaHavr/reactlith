@@ -1,5 +1,11 @@
 # reactlith
 
+## 1.0.14
+
+### Patch Changes
+
+- Update shadcn script name
+
 ## 1.0.13
 
 ### Patch Changes
