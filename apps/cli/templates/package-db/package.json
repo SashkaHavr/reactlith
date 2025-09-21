@@ -11,7 +11,8 @@
   "dependencies": {
     "drizzle-kit": "catalog:drizzle",
     "drizzle-orm": "catalog:drizzle",
-    "pg": "catalog:drizzle"
+    "pg": "catalog:drizzle",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/pg": "catalog:drizzle"

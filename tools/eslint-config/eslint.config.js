@@ -28,14 +28,6 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-unnecessary-condition': 'error',
       '@typescript-eslint/no-unnecessary-boolean-literal-compare': 'error',
-      '@typescript-eslint/strict-boolean-expressions': [
-        'error',
-        {
-          allowNumber: false,
-          allowNullableString: true,
-          allowNullableBoolean: true,
-        },
-      ],
       '@typescript-eslint/only-throw-error': 'off',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-misused-promises': [

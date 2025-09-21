@@ -43,4 +43,9 @@ export const auth = betterAuth({
       ...permissions,
     }),
   ],
+  advanced: {
+    database: {
+      generateId: false,
+    },
+  },
 });

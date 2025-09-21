@@ -1,5 +1,13 @@
 # reactlith
 
+## 1.0.13
+
+### Patch Changes
+
+- Update db schemas
+- Update eslint config
+- Fix docker container version
+
 ## 1.0.12
 
 ### Patch Changes
